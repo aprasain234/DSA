@@ -31,7 +31,7 @@ public int removeDuplicates(int[] numbers) {
 
     return left + 1;
 }
-
+==========================================
 public int removeElement(int[] nums, int val) {
     int left=0;
     for(int right=0;right<nums.length;right++) {
@@ -96,3 +96,52 @@ public int solution(int[] numbers) {
 }
 ============================================
 
+public int removeElemets(int[] nums, int value) {
+    int left = 0;
+
+    for(int right = 0;right<nums.length;right++) {
+        if(nums[right] != value) {
+            nums[left] = nums[right];
+            left++;
+
+        }
+    }
+    return left;
+
+}
+====================================================
+
+public void moveZeros(int[] nums) {
+    int left = 0;
+    for(int right = 0; right <nums.length; right++) {
+        if(nums[right] != 0) {
+            nums[left] = nums[right];
+            left++;
+        }
+    }
+
+    while(left < nums.length) {
+        nums[left] = 0;
+        left++;
+    }
+
+}
+==================================================
+LC-167
+class Solution {
+    public int[] twoSum(int[] numbers, int target) {
+        int left = 0, right = numbers.length - 1;
+        while(left < right) {
+            if(numbers[left] + numbers[right] == target) {
+                return new int[]{left + 1, right + 1};
+            } else if(numbers[left] + numbers[right] < target) {
+                left++;
+            } else if(numbers[left] + numbers[right] > target) {
+                right--;
+            }
+        }
+        return new int[]{left + 1, right + 1};
+    }
+}
+//  {-1, -1} is a common sentinel meaning “no valid indices found.” -1 is invalid here because valid indices are 1..numbers.length.
+==========================================================

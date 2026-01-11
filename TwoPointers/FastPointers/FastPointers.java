@@ -31,3 +31,106 @@ public static void main(String[] args) {
 }
 
 ==========================================================================================
+public boolean isPalindrome(String s) {
+    if(s == null) {
+        return false;
+    }
+    int left = 0;
+    int right = s.length() - 1;
+
+    while(left < right) {
+        if(s.charAt(left) != s.charAt(right)) {
+            return false;
+        }
+        left++;
+        right--;
+    }
+    return true;
+}
+==========================================
+LC-88
+class Solution {
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+        int i = m - 1;          // last valid in nums1
+        int j = n - 1;          // last in nums2
+        int k = m + n - 1;      // write position in nums1
+
+        while (j >= 0) {        // must place all nums2 elements
+            if (i >= 0 && nums1[i] > nums2[j]) {
+                nums1[k] = nums1[i];
+                i--;
+            } else {
+                nums1[k] = nums2[j];
+                j--;
+            }
+            k--;
+        }
+    }
+}
+
+========================================================
+LC-11:
+class Solution {
+    public int maxArea(int[] height) {
+        int left = 0;
+        int right = height.length - 1;
+        int best = 0;
+
+        while (left < right) {
+            int width = right - left;
+            int minHeight = Math.min(height[left], height[right]);
+            int area = width * minHeight;
+            if (area > best)
+                best = area;
+
+            if (height[left] < height[right]) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+
+        return best;
+    }
+}
+
+public int maxAreaOfWaterTank(int[] givenHeights) {
+    int left = 0;
+    int right = givenHeights.length - 1;
+    int area = 0;
+
+    while(left < right) {
+        int width = right - left;
+        int minimumHeight = Math.min(givenHeights[left], givenHeights[right]);
+        int bestArea = width * minimumHeight;
+        if(area < bestArea)
+            bestArea = area;
+        if(givenHeights[left] < givenHeights[right]) {
+            left++;
+        } else {
+            right--;
+        }
+    }
+    return bestArea;
+
+}
+=============================================================================
+LC-167:
+Two Summ ll - Input Array is Sorted
+
+class Solution {
+    public int[] twoSum(int[] numbers, int target) {
+        int left = 0, right = numbers.length - 1;
+        while(left < right) {
+            if(numbers[left] + numbers[right] == target) {
+                return new int[]{left + 1, right + 1};
+            } else if(numbers[left] + numbers[right] < target) {
+                left++;
+            } else if(numbers[left] + numbers[right] > target) {
+                right--;
+            }
+        }
+        return new int[]{left + 1, right + 1};
+    }
+}
+==================================================================================
