@@ -69,7 +69,7 @@ class Solution {
 }
 
 ========================================================
-LC-11:
+LC-11: https://chatgpt.com/canvas/shared/69842bc375448191ba853c176d7dbd68
 class Solution {
     public int maxArea(int[] height) {
         int left = 0;

@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DSA Visualizer — Container With Most Water</title>
+    <style>
+        :root {
+            --bg: #0b1020;
+            --panel: rgba(255,255,255,0.06);
+            --text: rgba(255,255,255,0.92);
+            --muted: rgba(255,255,255,0.68);
+            --line: rgba(255,255,255,0.14);
+            --good: #65d46e;
+            --warn: #ffcc66;
+            --bad: #ff6b6b;
+            --p1: #63a4ff;
+            --p2: #ff79c6;
+        }
+
+        html, body { height: 100%; }
+        body {
+            margin: 0;
+            background: radial-gradient(1200px 800px at 30% 10%, #162045 0%, var(--bg) 55%, #050812 100%);
+            color: var(--text);
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+            display: grid;
+            place-items: center;
+        }
+
+        .wrap {
+            width: min(1100px, 94vw);
+            display: grid;
+            grid-template-columns: 1.3fr 0.7fr;
+            gap: 14px;
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 14px 16px;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--line);
+            background: linear-gradient(to bottom, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+        }
+
+        .title { font-size: 16px; font-weight: 700; letter-spacing: 0.2px; }
+        .subtitle { font-size: 12px; color: var(--muted); }
+
+        canvas { display: block; width: 100%; height: 520px; }
+
+        .side { padding: 14px 14px 12px; }
+
+        .section { margin-bottom: 12px; }
+        .section h3 {
+            margin: 0 0 8px;
+            font-size: 12px;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+        button {
+            appearance: none;
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,0.06);
+            color: var(--text);
+            padding: 9px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 650;
+            font-size: 13px;
+            transition: transform 0.05s ease, background 0.12s ease;
+        }
+        button:hover { background: rgba(255,255,255,0.10); }
+        button:active { transform: translateY(1px); }
+        button.primary { border-color: rgba(101,212,110,0.55); }
+        button.danger { border-color: rgba(255,107,107,0.55); }
+
+        input[type="range"] { width: 100%; }
+
+        .kv {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px 10px;
+            align-items: center;
+            font-size: 13px;
+        }
+        .kv div:nth-child(odd) { color: var(--muted); }
+        .kv div:nth-child(even) { font-variant-numeric: tabular-nums; }
+
+        .log {
+            height: 170px;
+            overflow: auto;
+            padding: 10px;
+            border-radius: 12px;
+            background: rgba(0,0,0,0.18);
+            border: 1px solid var(--line);
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 12px;
+            color: rgba(255,255,255,0.85);
+            line-height: 1.35;
+            white-space: pre;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+
+        .pill {
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,0.05);
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
+        .dot.p1 { background: var(--p1); }
+        .dot.p2 { background: var(--p2); }
+
+        @media (max-width: 980px) {
+            .wrap { grid-template-columns: 1fr; }
+            canvas { height: 460px; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="card">
+        <div class="header">
+            <div>
+                <div class="title">LeetCode #11 — Container With Most Water</div>
+                <div class="subtitle">Two pointers: evaluate area, update best, move the shorter side</div>
+            </div>
+            <div class="pill"><span class="dot p1"></span>left&nbsp;&nbsp;<span class="dot p2"></span>right</div>
+        </div>
+        <canvas id="c"></canvas>
+    </div>
+
+    <div class="card side">
+        <div class="section">
+            <h3>Controls</h3>
+            <div class="row">
+                <button id="play" class="primary">Play</button>
+                <button id="step">Step</button>
+                <button id="reset">Reset</button>
+                <button id="shuffle" class="danger">New Input</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Speed</h3>
+            <input id="speed" type="range" min="0" max="100" value="55" />
+            <div class="hint">Left = slower, right = faster.</div>
+        </div>
+
+        <div class="section">
+            <h3>State</h3>
+            <div class="kv" id="kv"></div>
+        </div>
+
+        <div class="section">
+            <h3>Trace</h3>
+            <div class="log" id="log"></div>
+        </div>
+
+        <div class="section">
+            <h3>Input</h3>
+            <div class="hint" id="inputText"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- Core idea ---
+    // left = 0, right = n-1
+    // area = min(h[left], h[right]) * (right - left)
+    // best = max(best, area)
+    // move pointer at smaller height inward (ties: move right for determinism)
+
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+
+    const playBtn = document.getElementById('play');
+    const stepBtn = document.getElementById('step');
+    const resetBtn = document.getElementById('reset');
+    const shuffleBtn = document.getElementById('shuffle');
+    const speedRange = document.getElementById('speed');
+
+    const kv = document.getElementById('kv');
+    const logEl = document.getElementById('log');
+    const inputText = document.getElementById('inputText');
+
+    // Default example from LeetCode.
+    let heights = [1,8,6,2,5,4,8,3,7];
+
+    // Animation + algorithm state
+    let L, R, bestArea, bestPair;
+    let currentArea = 0;
+    let done = false;
+
+    let playing = false;
+    let lastStepAt = 0;
+
+    function resizeCanvas() {
+        // Match device pixel ratio for crispness.
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = Math.floor(rect.width * dpr);
+        canvas.height = Math.floor(rect.height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    window.addEventListener('resize', () => {
+        resizeCanvas();
+        draw();
+    });
+
+    function randHeights(n = 10) {
+        // Keep it readable: small n and heights in [1..10].
+        const arr = Array.from({length: n}, () => 1 + Math.floor(Math.random() * 10));
+        // Ensure at least one tall bar to make visualization interesting.
+        arr[Math.floor(Math.random()*n)] = 10;
+        return arr;
+    }
+
+    function resetState() {
+        L = 0;
+        R = heights.length - 1;
+        bestArea = 0;
+        bestPair = [0, heights.length - 1];
+        currentArea = 0;
+        done = false;
+        playing = false;
+        playBtn.textContent = 'Play';
+        logEl.textContent = '';
+        writeLog('Init: L=0, R=' + R);
+        updatePanels();
+        draw();
+    }
+
+    function writeLog(line) {
+        logEl.textContent += line + '\n';
+        logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function updatePanels() {
+        inputText.textContent = 'heights = [' + heights.join(', ') + ']';
+
+        const width = R - L;
+        const hL = heights[L];
+        const hR = heights[R];
+        const minH = Math.min(hL, hR);
+
+        const entries = [
+            ['L index', L],
+            ['R index', R],
+            ['h[L]', hL],
+            ['h[R]', hR],
+            ['width (R-L)', width],
+            ['min height', minH],
+            ['current area', currentArea],
+            ['best area', bestArea],
+            ['best pair', '[' + bestPair[0] + ', ' + bestPair[1] + ']'],
+            ['status', done ? 'DONE' : (playing ? 'PLAYING' : 'PAUSED')]
+        ];
+
+        kv.innerHTML = entries.map(([k, v]) => `<div>${k}</div><div>${v}</div>`).join('');
+    }
+
+    function step() {
+        if (done) return;
+
+        const hL = heights[L];
+        const hR = heights[R];
+        const width = R - L;
+        const minH = Math.min(hL, hR);
+        currentArea = minH * width;
+
+        let beatBest = false;
+        if (currentArea > bestArea) {
+            bestArea = currentArea;
+            bestPair = [L, R];
+            beatBest = true;
+        }
+
+        // Log the evaluation.
+        writeLog(
+            `Eval: L=${L} (h=${hL}), R=${R} (h=${hR}), width=${width}, area=${currentArea}` +
+            (beatBest ? '  <-- NEW BEST' : '')
+        );
+
+        // Decide which pointer to move.
+        if (hL < hR) {
+            L++;
+            writeLog('Move: L++ (left was shorter)');
+        } else {
+            R--; // ties go right-- for deterministic behavior
+            writeLog('Move: R-- (right was <= left)');
+        }
+
+        if (L >= R) {
+            done = true;
+            writeLog('Done: pointers crossed. Best area = ' + bestArea + ' at pair ' + bestPair.join(', '));
+        }
+
+        updatePanels();
+        draw();
+    }
+
+    function draw() {
+        const w = canvas.getBoundingClientRect().width;
+        const h = canvas.getBoundingClientRect().height;
+
+        // Clear
+        ctx.clearRect(0, 0, w, h);
+
+        // Layout
+        const pad = 22;
+        const baseline = h - 70;
+        const top = 24;
+        const chartH = baseline - top;
+        const n = heights.length;
+        const gap = 10;
+        const barW = Math.max(12, (w - pad*2 - gap*(n-1)) / n);
+
+        // Scale bars
+        const maxH = Math.max(...heights);
+
+        function xOf(i) {
+            return pad + i * (barW + gap);
+        }
+
+        function barHeight(v) {
+            return (v / maxH) * (chartH - 10);
+        }
+
+        // Subtle grid line
+        ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(pad, baseline + 0.5);
+        ctx.lineTo(w - pad, baseline + 0.5);
+        ctx.stroke();
+
+        // Draw the "water" rectangle for current L/R if not done.
+        if (!done) {
+            const xL = xOf(L) + barW/2;
+            const xR = xOf(R) + barW/2;
+            const waterTop = baseline - Math.min(barHeight(heights[L]), barHeight(heights[R]));
+            const waterBottom = baseline;
+
+            ctx.fillStyle = 'rgba(99, 164, 255, 0.12)';
+            ctx.strokeStyle = 'rgba(99, 164, 255, 0.22)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.rect(xL, waterTop, xR - xL, waterBottom - waterTop);
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        // Draw best rectangle (faint), so user sees convergence.
+        if (bestArea > 0) {
+            const [bL, bR] = bestPair;
+            const xL = xOf(bL) + barW/2;
+            const xR = xOf(bR) + barW/2;
+            const waterTop = baseline - Math.min(barHeight(heights[bL]), barHeight(heights[bR]));
+            const waterBottom = baseline;
+
+            ctx.fillStyle = 'rgba(101, 212, 110, 0.10)';
+            ctx.strokeStyle = 'rgba(101, 212, 110, 0.20)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.rect(xL, waterTop, xR - xL, waterBottom - waterTop);
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        // Bars
+        for (let i = 0; i < n; i++) {
+            const x = xOf(i);
+            const bh = barHeight(heights[i]);
+            const y = baseline - bh;
+
+            // Color logic
+            const isL = i === L;
+            const isR = i === R;
+            const isBestL = i === bestPair[0];
+            const isBestR = i === bestPair[1];
+
+            let fill = 'rgba(255,255,255,0.16)';
+            if (isBestL || isBestR) fill = 'rgba(101,212,110,0.25)';
+            if (isL) fill = 'rgba(99,164,255,0.48)';
+            if (isR) fill = 'rgba(255,121,198,0.46)';
+
+            ctx.fillStyle = fill;
+            ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+            ctx.lineWidth = 1;
+
+            roundRect(ctx, x, y, barW, bh, 10);
+            ctx.fill();
+            ctx.stroke();
+
+            // Index labels
+            ctx.fillStyle = 'rgba(255,255,255,0.70)';
+            ctx.font = '12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(String(i), x + barW/2, baseline + 18);
+
+            // Height labels
+            ctx.fillStyle = 'rgba(255,255,255,0.78)';
+            ctx.fillText(String(heights[i]), x + barW/2, y - 8);
+        }
+
+        // Pointer labels
+        drawPointerLabel('L', L, 'rgba(99,164,255,0.95)');
+        drawPointerLabel('R', R, 'rgba(255,121,198,0.92)');
+
+        // Footer info
+        ctx.fillStyle = 'rgba(255,255,255,0.78)';
+        ctx.font = '13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial';
+        ctx.textAlign = 'left';
+
+        const msg1 = done
+            ? `Done. Best area = ${bestArea} at (L=${bestPair[0]}, R=${bestPair[1]})`
+            : `Current area = ${currentArea} | Best area = ${bestArea}`;
+
+        ctx.fillText(msg1, pad, h - 28);
+
+        function drawPointerLabel(label, idx, color) {
+            const x = xOf(idx) + barW/2;
+            const y = top + 8;
+            ctx.fillStyle = color;
+            ctx.font = '700 13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x, y);
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x, y + 6);
+            ctx.lineTo(x, baseline + 2);
+            ctx.stroke();
+        }
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+        const rr = Math.min(r, w/2, h/2);
+        ctx.beginPath();
+        ctx.moveTo(x + rr, y);
+        ctx.arcTo(x + w, y, x + w, y + h, rr);
+        ctx.arcTo(x + w, y + h, x, y + h, rr);
+        ctx.arcTo(x, y + h, x, y, rr);
+        ctx.arcTo(x, y, x + w, y, rr);
+        ctx.closePath();
+    }
+
+    function tick(ts) {
+        if (playing && !done) {
+            const speed = Number(speedRange.value);
+            // Map [0..100] -> [1200ms..80ms]
+            const delay = 1200 - (speed * 11.2);
+            if (ts - lastStepAt >= delay) {
+                lastStepAt = ts;
+                step();
+            }
+        }
+
+        requestAnimationFrame(tick);
+    }
+
+    playBtn.addEventListener('click', () => {
+        if (done) return;
+        playing = !playing;
+        playBtn.textContent = playing ? 'Pause' : 'Play';
+        updatePanels();
+    });
+
+    stepBtn.addEventListener('click', () => {
+        playing = false;
+        playBtn.textContent = 'Play';
+        step();
+    });
+
+    resetBtn.addEventListener('click', () => {
+        resetState();
+    });
+
+    shuffleBtn.addEventListener('click', () => {
+        heights = randHeights(10 + Math.floor(Math.random() * 4));
+        resetState();
+    });
+
+    // init
+    resizeCanvas();
+    resetState();
+    requestAnimationFrame(tick);
+</script>
+</body>
+</html>
