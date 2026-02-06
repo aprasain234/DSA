@@ -1,0 +1,735 @@
+<!-- To visit direct url: https://chatgpt.com/canvas/shared/69842bc375448191ba853c176d7dbd68-->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DSA Visualizer — Max Number of Balloons (Frequency Counting)</title>
+    <style>
+        :root {
+            --bg: #0b1020;
+            --panel: rgba(255,255,255,0.06);
+            --text: rgba(255,255,255,0.92);
+            --muted: rgba(255,255,255,0.68);
+            --line: rgba(255,255,255,0.14);
+            --good: #65d46e;
+            --warn: #ffcc66;
+            --bad: #ff6b6b;
+            --accent: #63a4ff;
+            --pink: #ff79c6;
+            --purple: #b48cff;
+        }
+
+        html, body { height: 100%; }
+        body {
+            margin: 0;
+            background: radial-gradient(1200px 800px at 30% 10%, #162045 0%, var(--bg) 55%, #050812 100%);
+            color: var(--text);
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+            display: grid;
+            place-items: center;
+        }
+
+        .wrap {
+            width: min(1100px, 94vw);
+            display: grid;
+            grid-template-columns: 1.25fr 0.75fr;
+            gap: 14px;
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 14px 16px;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--line);
+            background: linear-gradient(to bottom, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+        }
+
+        .title { font-size: 16px; font-weight: 800; letter-spacing: 0.2px; }
+        .subtitle { font-size: 12px; color: var(--muted); }
+
+        canvas { display: block; width: 100%; height: 560px; }
+
+        .side { padding: 14px 14px 12px; }
+
+        .section { margin-bottom: 12px; }
+        .section h3 {
+            margin: 0 0 8px;
+            font-size: 12px;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+        button {
+            appearance: none;
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,0.06);
+            color: var(--text);
+            padding: 9px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 650;
+            font-size: 13px;
+            transition: transform 0.05s ease, background 0.12s ease;
+        }
+        button:hover { background: rgba(255,255,255,0.10); }
+        button:active { transform: translateY(1px); }
+        button.primary { border-color: rgba(101,212,110,0.55); }
+        button.danger { border-color: rgba(255,107,107,0.55); }
+
+        input[type="range"], input[type="text"] { width: 100%; }
+
+        input[type="text"] {
+            padding: 10px 10px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            background: rgba(0,0,0,0.18);
+            color: var(--text);
+            font-size: 13px;
+            outline: none;
+        }
+
+        .kv {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px 10px;
+            align-items: center;
+            font-size: 13px;
+        }
+        .kv div:nth-child(odd) { color: var(--muted); }
+        .kv div:nth-child(even) { font-variant-numeric: tabular-nums; }
+
+        .log {
+            height: 175px;
+            overflow: auto;
+            padding: 10px;
+            border-radius: 12px;
+            background: rgba(0,0,0,0.18);
+            border: 1px solid var(--line);
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 12px;
+            color: rgba(255,255,255,0.85);
+            line-height: 1.35;
+            white-space: pre;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+
+        .pill {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            background: rgba(255,255,255,0.05);
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .swatch { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
+        .swatch.scan { background: var(--accent); }
+        .swatch.need { background: var(--pink); }
+        .swatch.min { background: var(--good); }
+
+        @media (max-width: 980px) {
+            .wrap { grid-template-columns: 1fr; }
+            canvas { height: 520px; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="card">
+        <div class="header">
+            <div>
+                <div class="title">Max Number of &quot;balloon&quot; (Frequency Counting)</div>
+                <div class="subtitle">Scan text → count letters → answer = min(b, a, l/2, o/2, n)</div>
+            </div>
+            <div class="pill">
+                <span class="swatch scan"></span>scanning&nbsp;&nbsp;
+                <span class="swatch need"></span>needed letters&nbsp;&nbsp;
+                <span class="swatch min"></span>bottleneck
+            </div>
+        </div>
+        <canvas id="c"></canvas>
+    </div>
+
+    <div class="card side">
+        <div class="section">
+            <h3>Input</h3>
+            <input id="text" type="text" spellcheck="false" />
+            <div class="hint" style="margin-top:8px;">Tip: try <code>loonbalxballpoon</code> or <code>balloonballoon</code></div>
+        </div>
+
+        <div class="section">
+            <h3>Controls</h3>
+            <div class="row">
+                <button id="play" class="primary">Play</button>
+                <button id="step">Step</button>
+                <button id="reset">Reset</button>
+                <button id="random" class="danger">Random Text</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Speed</h3>
+            <input id="speed" type="range" min="0" max="100" value="55" />
+            <div class="hint">Left = slower, right = faster.</div>
+        </div>
+
+        <div class="section">
+            <h3>State</h3>
+            <div class="kv" id="kv"></div>
+        </div>
+
+        <div class="section">
+            <h3>Trace</h3>
+            <div class="log" id="log"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Visualizes this Java solution:
+    // 1) count[26] frequencies of chars in text
+    // 2) answer = min(count[b], count[a], count[l]/2, count[o]/2, count[n])
+
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+
+    const textInput = document.getElementById('text');
+    const playBtn = document.getElementById('play');
+    const stepBtn = document.getElementById('step');
+    const resetBtn = document.getElementById('reset');
+    const randomBtn = document.getElementById('random');
+    const speedRange = document.getElementById('speed');
+    const kv = document.getElementById('kv');
+    const logEl = document.getElementById('log');
+
+    const NEED = { b: 1, a: 1, l: 2, o: 2, n: 1 };
+
+    // State
+    let text = '';
+    let i = 0;             // scanning index
+    let counts = new Array(26).fill(0);
+    let stage = 'scan';    // 'scan' -> 'compute' -> 'done'
+    let playing = false;
+    let lastStepAt = 0;
+
+    // Compute stage fields
+    const needKeys = ['b','a','l','o','n'];
+    let computeIdx = 0;
+    let minBalloons = Infinity;
+    let bottleneck = null;
+
+    function idx(ch) { return ch.charCodeAt(0) - 97; }
+    function clampLowercase(s) { return (s || '').toLowerCase().replace(/[^a-z]/g, ''); }
+
+    function resizeCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = Math.floor(rect.width * dpr);
+        canvas.height = Math.floor(rect.height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    window.addEventListener('resize', () => {
+        resizeCanvas();
+        draw();
+    });
+
+    function writeLog(line) {
+        // IMPORTANT: Must be a literal "\n" inside the JS string.
+        // A raw newline inside quotes will crash parsing with "Invalid or unexpected token".
+        logEl.textContent += line + '\n';
+        logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    // Pure function equivalent of the Java snippet (used for built-in tests)
+    function maxNumberOfBalloonsPure(input) {
+        const t = clampLowercase(input);
+        const c = new Array(26).fill(0);
+        for (let k = 0; k < t.length; k++) c[idx(t[k])]++;
+
+        let min = Infinity;
+        min = Math.min(min, c[idx('b')]);
+        min = Math.min(min, c[idx('a')]);
+        min = Math.min(min, Math.floor(c[idx('l')] / 2));
+        min = Math.min(min, Math.floor(c[idx('o')] / 2));
+        min = Math.min(min, c[idx('n')]);
+        return (min === Infinity ? 0 : min);
+    }
+
+    function runSelfTests() {
+        const tests = [
+            // Known LeetCode-style examples
+            { text: 'nlaebolko', expected: 1 },
+            { text: 'loonbalxballpoon', expected: 2 },
+            { text: 'leetcode', expected: 0 },
+            // Additional sanity tests
+            { text: 'balloonballoon', expected: 2 },
+            { text: 'balon', expected: 0 },
+            { text: '', expected: 0 },
+            { text: 'BalloOn!!', expected: 1 },
+            { text: 'bbbbbaaaallllooooonnnn', expected: 2 }, // limited by b/a/n = 5,4,4 but l/o divide by 2 => 2
+        ];
+
+        writeLog('Self-tests (pure function):');
+        let pass = 0;
+        for (const t of tests) {
+            const got = maxNumberOfBalloonsPure(t.text);
+            const ok = got === t.expected;
+            if (ok) pass++;
+            writeLog(`  ${ok ? 'OK' : 'FAIL'}  input="${t.text}"  expected=${t.expected}  got=${got}`);
+        }
+        writeLog(`Self-tests: ${pass}/${tests.length} passed`);
+    }
+
+    function setText(newText) {
+        text = clampLowercase(newText);
+        textInput.value = text;
+        resetState(false);
+    }
+
+    function resetState(logInit = true) {
+        i = 0;
+        counts = new Array(26).fill(0);
+        stage = 'scan';
+        computeIdx = 0;
+        minBalloons = Infinity;
+        bottleneck = null;
+        playing = false;
+        playBtn.textContent = 'Play';
+        logEl.textContent = '';
+
+        if (logInit) {
+            writeLog('Init: stage=scan, i=0, counts[26]=0');
+            writeLog('Goal: answer = min(b, a, l/2, o/2, n)');
+            runSelfTests();
+            writeLog('--- Visual trace below ---');
+        }
+
+        updatePanels();
+        draw();
+    }
+
+    function updatePanels() {
+        const curChar = (stage === 'scan' && i < text.length) ? text[i] : '-';
+
+        // For compute stage preview
+        let computeKey = '-';
+        let computeValue = '-';
+        if (stage === 'compute' && computeIdx < needKeys.length) {
+            computeKey = needKeys[computeIdx];
+            const raw = counts[idx(computeKey)];
+            computeValue = (computeKey === 'l' || computeKey === 'o') ? Math.floor(raw / 2) : raw;
+        }
+
+        const entries = [
+            ['stage', stage.toUpperCase()],
+            ['text length', text.length],
+            ['scan index i', i],
+            ['current char', curChar],
+            ['count[b]', counts[idx('b')]],
+            ['count[a]', counts[idx('a')]],
+            ['count[l]', counts[idx('l')]],
+            ['count[o]', counts[idx('o')]],
+            ['count[n]', counts[idx('n')]],
+            ['compute key', computeKey],
+            ['compute value', computeValue],
+            ['min balloons', (minBalloons === Infinity ? '-' : minBalloons)],
+            ['bottleneck', bottleneck ?? '-'],
+            ['status', stage === 'done' ? 'DONE' : (playing ? 'PLAYING' : 'PAUSED')]
+        ];
+
+        kv.innerHTML = entries.map(([k, v]) => `<div>${k}</div><div>${v}</div>`).join('');
+    }
+
+    function step() {
+        if (stage === 'done') return;
+
+        if (stage === 'scan') {
+            if (i >= text.length) {
+                stage = 'compute';
+                writeLog('Scan complete → stage=compute');
+                updatePanels();
+                draw();
+                return;
+            }
+
+            const c = text[i];
+            counts[idx(c)]++;
+
+            // Only spam interesting letters in the log.
+            if (c in NEED) {
+                writeLog(`Scan: i=${i}, c='${c}' → count['${c}']=${counts[idx(c)]}`);
+            } else if (i % 6 === 0) {
+                writeLog(`Scan: i=${i}, c='${c}'`);
+            }
+
+            i++;
+
+            if (i >= text.length) {
+                writeLog('Scan complete (end of string)');
+            }
+
+            updatePanels();
+            draw();
+            return;
+        }
+
+        if (stage === 'compute') {
+            if (computeIdx >= needKeys.length) {
+                stage = 'done';
+                writeLog(`Done: answer = ${minBalloons} (bottleneck='${bottleneck ?? '-'}')`);
+                updatePanels();
+                draw();
+                return;
+            }
+
+            const key = needKeys[computeIdx];
+            const raw = counts[idx(key)];
+            const available = (key === 'l' || key === 'o') ? Math.floor(raw / 2) : raw;
+
+            const prev = minBalloons;
+            minBalloons = Math.min(minBalloons, available);
+            if (minBalloons !== prev) bottleneck = key;
+
+            writeLog(
+                `Compute: key='${key}', raw=${raw}` +
+                ((key === 'l' || key === 'o') ? `, effective=${available} (divide by 2)` : `, effective=${available}`) +
+                ` → min=${minBalloons}` +
+                ((bottleneck === key && minBalloons === available) ? '  <-- bottleneck' : '')
+            );
+
+            computeIdx++;
+            updatePanels();
+            draw();
+            return;
+        }
+    }
+
+    function draw() {
+        const w = canvas.getBoundingClientRect().width;
+        const h = canvas.getBoundingClientRect().height;
+
+        ctx.clearRect(0, 0, w, h);
+
+        const pad = 22;
+        const top = 18;
+
+        // Layout: top strip (string), middle (needed letters bars), bottom (all 26 histogram)
+        const stripH = 120;
+        const midH = 190;
+
+        drawStringStrip(pad, top, w - pad*2, stripH);
+        drawNeededPanel(pad, top + stripH + 10, w - pad*2, midH);
+        drawFullHistogram(pad, top + stripH + midH + 20, w - pad*2, h - (top + stripH + midH + 40));
+
+        // Footer
+        ctx.fillStyle = 'rgba(255,255,255,0.78)';
+        ctx.font = '13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial';
+        ctx.textAlign = 'left';
+
+        const status = stage === 'done'
+            ? `Answer = ${minBalloons} (bottleneck '${bottleneck ?? '-'}')`
+            : stage === 'compute'
+                ? `Computing min(...) step ${computeIdx+1}/${needKeys.length}`
+                : `Scanning text... i=${i}/${text.length}`;
+
+        ctx.fillText(status, pad, h - 18);
+    }
+
+    function drawStringStrip(x, y, width, height) {
+        ctx.fillStyle = 'rgba(255,255,255,0.78)';
+        ctx.font = '700 12px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial';
+        ctx.textAlign = 'left';
+        ctx.fillText('Scan the string (count[c - \'a\']++)', x, y + 14);
+
+        const boxY = y + 24;
+        const boxH = height - 34;
+
+        ctx.fillStyle = 'rgba(0,0,0,0.16)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+        ctx.lineWidth = 1;
+        roundRect(ctx, x, boxY, width, boxH, 14);
+        ctx.fill();
+        ctx.stroke();
+
+        const s = text;
+        const maxShow = 60;
+        const shown = s.length <= maxShow ? s : s.slice(0, maxShow);
+
+        const cellW = Math.min(18, (width - 18) / Math.max(1, shown.length));
+        const startX = x + 10;
+        const baseY = boxY + 40;
+
+        ctx.font = '13px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
+        ctx.textAlign = 'center';
+
+        for (let k = 0; k < shown.length; k++) {
+            const cx = startX + k * cellW + cellW/2;
+            const ch = shown[k];
+            const isNeed = ch in NEED;
+
+            const isCursor = (stage === 'scan') && (k === i) && (i < text.length);
+            const isPast = (stage !== 'scan') ? (k < Math.min(shown.length, s.length)) : (k < i);
+
+            if (isCursor) {
+                ctx.fillStyle = 'rgba(99,164,255,0.20)';
+                ctx.strokeStyle = 'rgba(99,164,255,0.55)';
+                ctx.lineWidth = 2;
+                roundRect(ctx, cx - cellW/2 + 1, boxY + 10, cellW - 2, boxH - 20, 10);
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            if (isNeed) ctx.fillStyle = isPast ? 'rgba(255,121,198,0.92)' : 'rgba(255,121,198,0.70)';
+            else ctx.fillStyle = isPast ? 'rgba(255,255,255,0.78)' : 'rgba(255,255,255,0.58)';
+
+            ctx.fillText(ch, cx, baseY);
+
+            // index
+            ctx.fillStyle = 'rgba(255,255,255,0.40)';
+            ctx.font = '11px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
+            ctx.fillText(String(k), cx, baseY + 18);
+            ctx.font = '13px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
+        }
+
+        if (s.length > maxShow) {
+            ctx.fillStyle = 'rgba(255,255,255,0.55)';
+            ctx.textAlign = 'left';
+            ctx.font = '12px ui-sans-serif, system-ui';
+            ctx.fillText(`(showing first ${maxShow} chars)`, x + 10, boxY + boxH - 10);
+        }
+
+        if (stage === 'scan' && i < shown.length) {
+            const cx = startX + i * cellW + cellW/2;
+            ctx.strokeStyle = 'rgba(99,164,255,0.95)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(cx, boxY + 6);
+            ctx.lineTo(cx, boxY + 16);
+            ctx.stroke();
+            ctx.fillStyle = 'rgba(99,164,255,0.95)';
+            ctx.beginPath();
+            ctx.moveTo(cx, boxY + 6);
+            ctx.lineTo(cx - 5, boxY + 12);
+            ctx.lineTo(cx + 5, boxY + 12);
+            ctx.closePath();
+            ctx.fill();
+        }
+    }
+
+    function drawNeededPanel(x, y, width, height) {
+        ctx.fillStyle = 'rgba(255,255,255,0.78)';
+        ctx.font = '700 12px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial';
+        ctx.textAlign = 'left';
+        ctx.fillText('Compute answer = min(b, a, l/2, o/2, n)', x, y + 14);
+
+        const boxY = y + 24;
+        const boxH = height - 34;
+
+        ctx.fillStyle = 'rgba(0,0,0,0.16)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+        ctx.lineWidth = 1;
+        roundRect(ctx, x, boxY, width, boxH, 14);
+        ctx.fill();
+        ctx.stroke();
+
+        const cols = needKeys.length;
+        const gap = 14;
+        const barW = Math.min(110, (width - 24 - gap*(cols-1)) / cols);
+        const startX = x + 12;
+        const baseY = boxY + boxH - 40;
+        const chartH = boxH - 70;
+
+        const eff = needKeys.map(k => {
+            const raw = counts[idx(k)];
+            return (k === 'l' || k === 'o') ? Math.floor(raw / 2) : raw;
+        });
+        const maxEff = Math.max(1, ...eff);
+
+        for (let j = 0; j < cols; j++) {
+            const k = needKeys[j];
+            const raw = counts[idx(k)];
+            const effective = (k === 'l' || k === 'o') ? Math.floor(raw / 2) : raw;
+            const bh = (effective / maxEff) * chartH;
+
+            const bx = startX + j * (barW + gap);
+            const by = baseY - bh;
+
+            const isComputeCursor = stage === 'compute' && j === computeIdx;
+            const isBottleneck = (bottleneck === k) && (stage !== 'scan');
+
+            let fill = 'rgba(255,255,255,0.14)';
+            if (k === 'l' || k === 'o') fill = 'rgba(180,140,255,0.22)';
+            if (isBottleneck) fill = 'rgba(101,212,110,0.28)';
+            if (isComputeCursor) fill = 'rgba(255,204,102,0.28)';
+
+            ctx.fillStyle = fill;
+            ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+            ctx.lineWidth = 1;
+            roundRect(ctx, bx, by, barW, bh, 12);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.textAlign = 'center';
+            ctx.fillStyle = 'rgba(255,255,255,0.82)';
+            ctx.font = '700 14px ui-sans-serif, system-ui';
+            ctx.fillText(k, bx + barW/2, baseY + 22);
+
+            ctx.font = '12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
+            ctx.fillStyle = 'rgba(255,255,255,0.72)';
+            ctx.fillText(`raw=${raw}`, bx + barW/2, baseY + 40);
+
+            ctx.fillStyle = 'rgba(255,255,255,0.86)';
+            const note = (k === 'l' || k === 'o') ? `eff=${effective} (÷2)` : `eff=${effective}`;
+            ctx.fillText(note, bx + barW/2, by - 8);
+
+            if (isComputeCursor) {
+                ctx.fillStyle = 'rgba(255,204,102,0.90)';
+                ctx.font = '700 12px ui-sans-serif, system-ui';
+                ctx.fillText('checking', bx + barW/2, boxY + 16);
+            }
+
+            if (isBottleneck) {
+                ctx.fillStyle = 'rgba(101,212,110,0.95)';
+                ctx.font = '800 12px ui-sans-serif, system-ui';
+                ctx.fillText('bottleneck', bx + barW/2, boxY + 16);
+            }
+        }
+    }
+
+    function drawFullHistogram(x, y, width, height) {
+        ctx.fillStyle = 'rgba(255,255,255,0.70)';
+        ctx.font = '700 12px ui-sans-serif, system-ui';
+        ctx.textAlign = 'left';
+        ctx.fillText('Full frequency array (count[26])', x, y + 14);
+
+        const boxY = y + 24;
+        const boxH = Math.max(80, height - 24);
+
+        ctx.fillStyle = 'rgba(0,0,0,0.14)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+        ctx.lineWidth = 1;
+        roundRect(ctx, x, boxY, width, boxH, 14);
+        ctx.fill();
+        ctx.stroke();
+
+        const n = 26;
+        const gap = 6;
+        const barW = (width - 22 - gap*(n-1)) / n;
+        const baseY = boxY + boxH - 22;
+        const chartH = boxH - 42;
+
+        const maxC = Math.max(1, ...counts);
+
+        ctx.textAlign = 'center';
+        ctx.font = '10px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
+
+        for (let t = 0; t < n; t++) {
+            const ch = String.fromCharCode(97 + t);
+            const c = counts[t];
+            const bh = (c / maxC) * chartH;
+            const bx = x + 11 + t * (barW + gap);
+            const by = baseY - bh;
+
+            const isNeed = ch in NEED;
+            const isCursorChar = (stage === 'scan' && i > 0 && text[i-1] === ch);
+
+            let fill = 'rgba(255,255,255,0.10)';
+            if (isNeed) fill = 'rgba(255,121,198,0.18)';
+            if (isCursorChar) fill = 'rgba(99,164,255,0.25)';
+
+            ctx.fillStyle = fill;
+            ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+            roundRect(ctx, bx, by, barW, bh, 8);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = isNeed ? 'rgba(255,121,198,0.85)' : 'rgba(255,255,255,0.55)';
+            ctx.fillText(ch, bx + barW/2, baseY + 12);
+        }
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+        const rr = Math.min(r, w/2, h/2);
+        ctx.beginPath();
+        ctx.moveTo(x + rr, y);
+        ctx.arcTo(x + w, y, x + w, y + h, rr);
+        ctx.arcTo(x + w, y + h, x, y + h, rr);
+        ctx.arcTo(x, y + h, x, y, rr);
+        ctx.arcTo(x, y, x + w, y, rr);
+        ctx.closePath();
+    }
+
+    function tick(ts) {
+        if (playing && stage !== 'done') {
+            const speed = Number(speedRange.value);
+            const delay = 1200 - (speed * 11.2);
+            if (ts - lastStepAt >= delay) {
+                lastStepAt = ts;
+                step();
+            }
+        }
+        requestAnimationFrame(tick);
+    }
+
+    playBtn.addEventListener('click', () => {
+        if (stage === 'done') return;
+        playing = !playing;
+        playBtn.textContent = playing ? 'Pause' : 'Play';
+        updatePanels();
+    });
+
+    stepBtn.addEventListener('click', () => {
+        playing = false;
+        playBtn.textContent = 'Play';
+        step();
+    });
+
+    resetBtn.addEventListener('click', () => {
+        resetState();
+    });
+
+    randomBtn.addEventListener('click', () => {
+        const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+        const base = ['loonbalxballpoon', 'balloonballoon', 'leetcode', 'bbaalloonn', 'balon', 'bllooaann', 'nlaebolko'];
+        let s = base[Math.floor(Math.random() * base.length)];
+        const extra = 10 + Math.floor(Math.random() * 18);
+        for (let k = 0; k < extra; k++) s += alphabet[Math.floor(Math.random() * alphabet.length)];
+        setText(s);
+        writeLog('Random text set');
+    });
+
+    textInput.addEventListener('input', () => {
+        setText(textInput.value);
+    });
+
+    // init
+    resizeCanvas();
+    setText('loonbalxballpoon');
+    resetState(true);
+    requestAnimationFrame(tick);
+</script>
+</body>
+</html>
