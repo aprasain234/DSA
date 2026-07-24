@@ -6,10 +6,10 @@ public class Arrays {
 
         int[][] worldPopulation = {
                 //    0,  1,  2,  3,  4
-                {100, 200, 300, 400, 500},                            // 0
+                {100, 200, 300, 400, 500},                             // 0
                 {213, 254, 354, 656, 766, 766},                        // 1
-                {232, 8676, 9767, 54, 2232, 23232, 5343, 54656},         // 2
-                {43243, 434, 4342, 655, 3212, 6767, 22323}              // 3
+                {232, 8676, 9767, 54, 2232, 23232, 5343, 54656},       // 2
+                {43243, 434, 4342, 655, 3212, 6767, 22323}             // 3
         };
         System.out.println("The wordPopulation of cities are: " + worldPopulation[1] + " and length is: " + worldPopulation[1].length);  //6
         System.out.println("The wordPopulation of cities are: " + worldPopulation[2] + " and length is: " + worldPopulation[2].length);  //8
@@ -36,7 +36,7 @@ public class Arrays {
 
 
 // add a 3x3 matrix
-
+/*
 public class Playground {
     public static void main(String[] args) {
 
@@ -85,3 +85,4 @@ public class Playground {
         }
     }
 }
+*/
