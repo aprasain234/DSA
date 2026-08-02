@@ -5,4 +5,16 @@ HASHTABLE
 HashMap myHashMap = new HashMap();
 myHashMap.put(1,1);
 
+-------------------------------
+HashMap vs HashTable:
+
+The main difference between HashMap and Hashtable lies in thread safety and performance: HashMap is non-synchronized and fast, whereas Hashtable is synchronized and slower.
+Because Hashtable is a legacy class, modern applications overwhelmingly prefer HashMap or ConcurrentHashMap.
+
+Which one should you use?
+For Single-Threaded Tasks: Use HashMap because it is highly efficient.
+
+For Multi-Threaded Tasks (Thread Safety): Do not use Hashtable. Instead, use ConcurrentHashMap from the Oracle Java Documentation. It offers superior concurrent performance by
+locking individual buckets rather than the whole table.
+-------------------------------------------------------
 
