@@ -1,3 +1,5 @@
+import java.util.List;
+
 public class Arrays {
     public static void main(String[] args) {
 
@@ -27,12 +29,15 @@ public class Arrays {
         // Column count: matrix[0].length
          */
 
-        String[] cars = {"Volvo", "BMW", "Ford", "Mazda"};
-        System.out.println(cars.length); // Outputs 4
-        for (int i = 0; i < cars.length; i++) {
-            System.out.println("Car at index " + i + " is " + cars[i]);
-        }
+//        String[] cars = {"Volvo", "BMW", "Ford", "Mazda"};
+//        System.out.println(cars.length); // Outputs 4
+//        for (int i = 0; i < cars.length; i++) {
+//            System.out.println("Car at index " + i + " is " + cars[i]);
+//        }
 
+        String[] names = {"A", "B", "C", "D"};
+        int x = List.of(names).indexOf("C");
+        System.out.println(x);
 
     }
 }
