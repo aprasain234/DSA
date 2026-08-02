@@ -1,0 +1,4 @@
+2D Arrays (Matrices):
+A 2D array is essentially an "array of arrays," often used to represent grids, game boards, or coordinate systems. In memory, however, RAM is inherently 1-dimensional.
+
+Most languages "flatten" a 2D array into a 1D sequence using row-major order (laying out row 0, then row 1, etc.).

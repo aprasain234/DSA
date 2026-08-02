@@ -39,5 +39,16 @@ public class Arrays {
         int x = List.of(names).indexOf("C");
         System.out.println(x);
 
+        int[] numbers = {1,2,3,4,5};
+        int value = numbers[2];
+        System.out.println("Element at index " + "2" + " = " + value);
+
+        // Traversal: visit each element exactly once
+        int[] arr = {3,8,12,17,88,95,32};
+        System.out.print("Array elements: ");
+        for (int i = 0; i < arr.length; i++) {
+            System.out.print(arr[i] + " ");
+        }
+
     }
 }
