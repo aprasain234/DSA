@@ -52,5 +52,21 @@ public class HashTableClass {
         for (Map.Entry<String, Integer> entry : hashMap.entrySet()) {
             System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
         }
+
+        System.out.println("-----------------------------------------------------------");
+        // Count frequency of each element
+        int[] nums = {1,2,3,3,4,5,6,6,6,7,8,8,8,8,9,9};
+        Map<Integer, Integer> freqMap = new HashMap<>();
+        for (int num : nums) {
+            freqMap.put(num, freqMap.getOrDefault(num, 0) + 1);
+        }
+        System.out.println(freqMap);
+
+
+        System.out.println("-----------------------------------------------------------");
+
+
+
+
     }
 }
