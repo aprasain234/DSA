@@ -54,7 +54,7 @@ public class HashTableClass {
         }
 
         System.out.println("-----------------------------------------------------------");
-        // Count frequency of each element
+        // Variant 1: Single Frequency Map: Count frequency of each element
         int[] nums = {1,2,3,3,4,5,6,6,6,7,8,8,8,8,9,9};
         Map<Integer, Integer> freqMap = new HashMap<>();
         for (int num : nums) {
@@ -62,8 +62,16 @@ public class HashTableClass {
         }
         System.out.println(freqMap);
 
-
         System.out.println("-----------------------------------------------------------");
+        // Variant 2: Two Frequency Maps Comparison
+     /*   String s1 = "listen";
+        String s2 = "silent";
+        // Check if two strings are anagrams
+        Map<Character, Integer> freq1 = buildFrequencyMap(s1);
+        Map<Character, Integer> freq2 = buildFrequencyMap(s2);
+        return freq1.equals(freq2);
+    */
+
 
 
 
