@@ -1,0 +1,7 @@
+Problem Type	                     Key Signal	                                                       Examples
+Anagram detection	                 "anagram", "rearrange letters"	                                   Valid Anagram, Group Anagrams
+Duplicate finding	                 "duplicate", "appears more than once"	                           Contains Duplicate, First Duplicate
+Unique element finding	             "first unique", "appears once"	                                   First Unique Character
+Frequency queries	                 "most frequent", "top k frequent"	                               Top K Frequent Elements
+Composition matching	             "same characters", "same elements"	                               Ransom Note, Find All Anagrams
+Counting problems	                 "count occurrences", "how many"	                               Word Frequency, Element Count
