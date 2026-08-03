@@ -72,7 +72,24 @@ public class HashTableClass {
         return freq1.equals(freq2);
     */
 
+        /*
+        //  Variant 3: Increment/Decrement Pattern
+        String s1 = "listen";
+        String s2 = "silent";
+        // Check if two strings are anagrams with single map
+        if (s1.length() != s2.length()) return false;
 
+        Map<Character, Integer> freq = new HashMap<>();
+        for (char c : s1.toCharArray()) {
+            freq.put(c, freq.getOrDefault(c, 0) + 1);
+        }
+        for (char c : s2.toCharArray()) {
+            int updated = freq.getOrDefault(c, 0) - 1;
+            if (updated < 0) return false;  // s2 has a char s1 doesn't have enough of
+            freq.put(c, updated);
+        }
+        return true;
+         */
 
 
 
