@@ -1,0 +1,19 @@
+For-each loop explained:
+for (DataType item : collectionOrArray) {
+    // Code to execute for each item
+}
+Example:
+String[] languages = {"Java", "Python", "JavaScript", "C++"};
+// Enhanced for loop
+for (String lang : languages) {
+    System.out.println(lang);
+}
+What’s happening here?
+
+String lang: A temporary variable created for the current iteration.
+
+: languages: Means "in the languages array."
+
+On every iteration, lang automatically takes the value of the next element in the array until the end is reached. No i++ or languages.length required!
+
+-----------------------------------------------------------
