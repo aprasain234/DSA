@@ -18,3 +18,29 @@ For Multi-Threaded Tasks (Thread Safety): Do not use Hashtable. Instead, use Con
 locking individual buckets rather than the whole table.
 -------------------------------------------------------
 
+Frequency Counting:
+Frequency counting is a technique where we count the occurrences of elements (characters, numbers, or any objects) and use these counts to solve problems. The core data structures
+are hash maps and fixed-size arrays.
+
+A hash map (or dictionary) stores counts for arbitrary elements with O(1) average lookup and update time. A fixed-size array works when the element range is known and small, like
+the 26 lowercase English letters.
+
+Frequency counting reduces complex comparisons to simple count comparisons. Two strings are anagrams if and only if they have identical character frequencies. An array has
+duplicates if any element has a frequency greater than one.
+
+When to Use Frequency Counting
+Reach for frequency counting when a problem shows one of these signals:
+
+1. Mentions of "anagram" or "permutation"
+Anagrams are strings with the same character frequencies. Permutations are sequences with the same element frequencies.
+2. Questions about "duplicates" or "unique elements"
+Finding duplicates means finding elements with frequency > 1. Finding unique elements means finding elements with frequency = 1.
+3. Comparing composition rather than order
+If you need to check whether two collections have the same elements regardless of order, frequency counting fits well.
+4. Anything asking about "occurrence count" or "frequency"
+A problem that explicitly asks how many times something appears is a direct frequency counting problem.
+5. Matching or grouping by content
+Grouping anagrams together, finding words that use the same letters, or matching patterns all use frequency counting.
+
+
+
