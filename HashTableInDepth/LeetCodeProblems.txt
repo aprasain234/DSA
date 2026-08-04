@@ -1,0 +1,37 @@
+LeetCode Problems:
+
+LC 242. Valid Anagram:
+Solution:
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        // 1. Anagrams must have the same length.
+        if (s.length() != t.length()) {
+            return false;
+        }
+
+        // 2. Create a frequency map for characters 'a'-'z'.
+        int[] charCounts = new int[26];
+
+        // 3. Count character frequencies for the first string.
+        for (char c : s.toCharArray()) {
+            charCounts[c - 'a']++;
+        }
+
+        // 4. Decrement frequencies based on the second string.
+        for (char c : t.toCharArray()) {
+            // Decrement the count for the current character.
+            charCounts[c - 'a']--;
+
+            // If a count becomes negative, it means t has more of this
+            // character than s, so they can't be anagrams.
+            if (charCounts[c - 'a'] < 0) {
+                return false;
+            }
+        }
+
+        // 5. If the loop completes, the strings are anagrams.
+        return true;
+    }
+}
+
+-----------------------------------------------------------------------
