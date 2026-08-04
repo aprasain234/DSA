@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balloon Algorithm Visualizer</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --highlight: #10b981;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background-color: var(--panel-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        button {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover { opacity: 0.8; }
+        button:disabled { background-color: #475569; cursor: not-allowed; }
+
+        input {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: white;
+            font-size: 16px;
+            width: 250px;
+        }
+
+        .section-title {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .string-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 24px;
+            justify-content: center;
+        }
+
+        .char-box {
+            width: 36px;
+            height: 40px;
+            background-color: #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .char-box.active {
+            background-color: var(--warning);
+            color: #000;
+            transform: scale(1.1);
+        }
+
+        .array-container {
+            display: grid;
+            grid-template-columns: repeat(13, 1fr);
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .array-slot {
+            background-color: #334155;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .array-slot.active {
+            background-color: var(--highlight);
+            color: #000;
+            transform: translateY(-4px);
+        }
+
+        .array-slot.target {
+            border: 2px solid var(--warning);
+        }
+
+        .slot-label {
+            font-size: 0.75rem;
+            padding: 4px;
+            background-color: rgba(0,0,0,0.3);
+            width: 100%;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .array-slot.active .slot-label, .array-slot.target .slot-label {
+            color: #fff;
+        }
+
+        .slot-value {
+            padding: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .execution-panel {
+            background-color: #0f172a;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .log-line {
+            margin: 4px 0;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .log-line.active {
+            opacity: 1;
+            color: var(--highlight);
+        }
+
+        .bottleneck-container {
+            display: flex;
+            justify-content: space-around;
+            background-color: #334155;
+            padding: 16px;
+            border-radius: 8px;
+        }
+
+        .bottle-stat {
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .bottle-stat span {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--highlight);
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎈 maxNumberOfBalloons() Visualizer</h1>
+
+    <div class="controls">
+        <input type="text" id="textInput" value="nlaebolko" placeholder="Enter random text">
+        <button id="startBtn">Load String</button>
+        <button id="stepBtn" disabled>Next Step</button>
+        <button id="autoBtn" disabled>Auto Play</button>
+    </div>
+
+    <div class="section-title">1. text.toCharArray()</div>
+    <div class="string-container" id="stringContainer">
+        <!-- String characters will go here -->
+    </div>
+
+    <div class="section-title">2. int[] counts = new int[26]</div>
+    <div class="array-container" id="arrayContainer">
+        <!-- Array slots will go here -->
+    </div>
+
+    <div class="section-title">3. Execution Trace</div>
+    <div class="execution-panel" id="executionPanel">
+        <div id="log-count" class="log-line">Waiting to start...</div>
+        <div id="log-math" class="log-line"></div>
+    </div>
+
+    <div class="section-title">4. Math.min() Bottleneck Tracker</div>
+    <div class="bottleneck-container" id="bottleneckContainer">
+        <div class="bottle-stat">b<span>-</span></div>
+        <div class="bottle-stat">a<span>-</span></div>
+        <div class="bottle-stat">l (/2)<span>-</span></div>
+        <div class="bottle-stat">o (/2)<span>-</span></div>
+        <div class="bottle-stat">n<span>-</span></div>
+        <div class="bottle-stat" style="color: var(--warning);">minBalloons<span id="finalMin">-</span></div>
+    </div>
+</div>
+
+<script>
+    const alphabet = "abcdefghijklmnopqrstuvwxyz";
+    let text = "";
+    let counts = new Array(26).fill(0);
+    let step = 0;
+    let phase = 0; // 0: input, 1: counting, 2: math.min
+    let charIndex = 0;
+    let mathIndex = 0;
+    let minBalloons = 0;
+    let autoInterval = null;
+
+    const balloonChars = ['b', 'a', 'l', 'o', 'n'];
+
+    const dom = {
+        input: document.getElementById('textInput'),
+        startBtn: document.getElementById('startBtn'),
+        stepBtn: document.getElementById('stepBtn'),
+        autoBtn: document.getElementById('autoBtn'),
+        stringContainer: document.getElementById('stringContainer'),
+        arrayContainer: document.getElementById('arrayContainer'),
+        logCount: document.getElementById('log-count'),
+        logMath: document.getElementById('log-math'),
+        bottleStats: document.querySelectorAll('.bottle-stat span')
+    };
+
+    function init() {
+        text = dom.input.value.toLowerCase().replace(/[^a-z]/g, '');
+        if(!text) text = "nlaebolko";
+        dom.input.value = text;
+
+        counts = new Array(26).fill(0);
+        step = 0; phase = 1; charIndex = 0; mathIndex = 0;
+        minBalloons = Number.MAX_SAFE_INTEGER;
+
+        // Render String
+        dom.stringContainer.innerHTML = text.split('').map(c =>
+            `<div class="char-box" id="char-${charIndex++}">${c}</div>`
+        ).join('');
+        charIndex = 0;
+
+        // Render Array
+        dom.arrayContainer.innerHTML = alphabet.split('').map((c, i) =>
+            `<div class="array-slot" id="slot-${i}">
+                <div class="slot-label">${c} [${i}]</div>
+                <div class="slot-value" id="val-${i}">0</div>
+            </div>`
+        ).join('');
+
+        // Reset Stats
+        dom.bottleStats.forEach(stat => stat.innerText = '-');
+        dom.logCount.innerText = `Ready to count ${text.length} characters...`;
+        dom.logMath.innerText = ``;
+        dom.logCount.className = "log-line active";
+        dom.logMath.className = "log-line";
+
+        dom.stepBtn.disabled = false;
+        dom.autoBtn.disabled = false;
+        dom.autoBtn.innerText = "Auto Play";
+        clearInterval(autoInterval);
+        autoInterval = null;
+    }
+
+    function highlightChar(index, active) {
+        const el = document.getElementById(`char-${index}`);
+        if(el) active ? el.classList.add('active') : el.classList.remove('active');
+    }
+
+    function updateSlot(charStr, value, highlightType) {
+        const index = charStr.charCodeAt(0) - 97;
+        const slot = document.getElementById(`slot-${index}`);
+        const valEl = document.getElementById(`val-${index}`);
+
+        if(highlightType === 'count') {
+            slot.classList.add('active');
+            setTimeout(() => slot.classList.remove('active'), 400);
+        } else if (highlightType === 'target') {
+            document.querySelectorAll('.array-slot').forEach(el => el.classList.remove('target'));
+            slot.classList.add('target');
+        }
+        valEl.innerText = value;
+    }
+
+    function doStep() {
+        if (phase === 1) {
+            // Counting Phase
+            if (charIndex > 0) highlightChar(charIndex - 1, false);
+
+            if (charIndex < text.length) {
+                const c = text[charIndex];
+                highlightChar(charIndex, true);
+
+                const alphaIndex = c.charCodeAt(0) - 97;
+                counts[alphaIndex]++;
+                updateSlot(c, counts[alphaIndex], 'count');
+
+                dom.logCount.innerHTML = `char c = '${c}';<br>counts['${c}' - 'a']++; <span style="color:#94a3b8">// counts[${alphaIndex}] is now ${counts[alphaIndex]}</span>`;
+
+                charIndex++;
+            } else {
+                phase = 2; // Move to Math phase
+                dom.logCount.className = "log-line";
+                dom.logMath.className = "log-line active";
+            }
+        }
+        else if (phase === 2) {
+            // Math.min Phase
+            if (mathIndex < balloonChars.length) {
+                const c = balloonChars[mathIndex];
+                const count = counts[c.charCodeAt(0) - 97];
+                let effectiveCount = count;
+
+                let codeStr = "";
+                updateSlot(c, count, 'target');
+
+                if (mathIndex === 0) {
+                    minBalloons = count;
+                    codeStr = `minBalloons = counts['b' - 'a']; // ${count}`;
+                } else if (c === 'l' || c === 'o') {
+                    effectiveCount = Math.floor(count / 2);
+                    minBalloons = Math.min(minBalloons, effectiveCount);
+                    codeStr = `minBalloons = Math.min(${minBalloons}, counts['${c}' - 'a'] / 2); // min(${minBalloons}, ${count}/2)`;
+                } else {
+                    minBalloons = Math.min(minBalloons, effectiveCount);
+                    codeStr = `minBalloons = Math.min(${minBalloons}, counts['${c}' - 'a']); // min(${minBalloons}, ${count})`;
+                }
+
+                dom.logMath.innerHTML = codeStr;
+                dom.bottleStats[mathIndex].innerText = effectiveCount;
+                dom.bottleStats[5].innerText = minBalloons; // Update final min
+
+                mathIndex++;
+            } else {
+                document.querySelectorAll('.array-slot').forEach(el => el.classList.remove('target'));
+                dom.logMath.innerHTML = `<strong>return ${minBalloons};</strong> // Can spell "balloon" ${minBalloons} times!`;
+                dom.stepBtn.disabled = true;
+                if(autoInterval) toggleAuto();
+                phase = 3; // Done
+            }
+        }
+    }
+
+    function toggleAuto() {
+        if (autoInterval) {
+            clearInterval(autoInterval);
+            autoInterval = null;
+            dom.autoBtn.innerText = "Auto Play";
+        } else {
+            if (phase === 3) init();
+            autoInterval = setInterval(doStep, 600);
+            dom.autoBtn.innerText = "Pause";
+        }
+    }
+
+    dom.startBtn.addEventListener('click', init);
+    dom.stepBtn.addEventListener('click', () => {
+        if (autoInterval) toggleAuto();
+        doStep();
+    });
+    dom.autoBtn.addEventListener('click', toggleAuto);
+    dom.input.addEventListener('keypress', (e) => {
+        if(e.key === 'Enter') init();
+    });
+
+    // Initial load
+    init();
+</script>
+
+</body>
+</html>
