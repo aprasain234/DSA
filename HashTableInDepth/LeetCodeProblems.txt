@@ -35,3 +35,37 @@ class Solution {
 }
 
 -----------------------------------------------------------------------
+LC 383: Ransom Note
+
+class Solution {
+    public boolean canConstruct(String ransomNote, String magazine) {
+        // Optimization: If the note requires more letters than the magazine has, it's impossible.
+        if (ransomNote.length() > magazine.length()) {
+            return false;
+        }
+
+        // Create an array of 26 zeros to represent the letters 'a' through 'z'
+        int[] charCounts = new int[26];
+
+        // Step 1: Build the inventory from the magazine
+        for (char c : magazine.toCharArray()) {
+            // c - 'a' maps 'a' to 0, 'b' to 1, ..., 'z' to 25
+            charCounts[c - 'a']++;
+        }
+
+        // Step 2 & 3: Read the note and consume letters
+        for (char c : ransomNote.toCharArray()) {
+            // If we have 0 of this letter left, we can't build the note
+            if (charCounts[c - 'a'] == 0) {
+                return false;
+            }
+
+            // Consume the letter
+            charCounts[c - 'a']--;
+        }
+
+        // Step 4: If we make it through the whole note, we had enough letters
+        return true;
+    }
+}
+----------------------------------------------------------------------------------
