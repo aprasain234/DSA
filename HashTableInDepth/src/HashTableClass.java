@@ -70,6 +70,24 @@ public class HashTableClass {
         Map<Character, Integer> freq1 = buildFrequencyMap(s1);
         Map<Character, Integer> freq2 = buildFrequencyMap(s2);
         return freq1.equals(freq2);
+
+
+        Hers is the logical implementation of above method:
+        public static Map<Character, Integer> buildFrequencyMap(String word) {
+    // 1. Create the blank tally sheet
+    Map<Character, Integer> freqMap = new HashMap<>();
+
+    // 2. Smash the word into individual letters
+    char[] letters = word.toCharArray();
+
+    // 3. Loop through every letter and count it
+    for (char letter : letters) {
+        freqMap.put(letter, freqMap.getOrDefault(letter, 0) + 1);
+    }
+
+    // 4. Hand back the finished tally sheet
+    return freqMap;
+}
     */
 
         /*
@@ -90,6 +108,24 @@ public class HashTableClass {
         }
         return true;
          */
+
+        // Variant 4: Fixed-Size Array
+        // Character frequency using array[26]
+        int[] freq = new int[26];
+        String s = "listen";
+        for (char c : s.toCharArray()) {
+            freq[c - 'a']++;
+        }
+
+
+
+
+
+
+
+
+
+
 
 
 
