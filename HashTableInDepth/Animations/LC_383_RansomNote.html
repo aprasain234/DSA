@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ransom Note Algorithm Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #10b981;
+            --danger: #ef4444;
+            --border: #e2e8f0;
+            --highlight-mag: #38bdf8;
+            --highlight-note: #a78bfa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .input-field {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background-color: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .string-display {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--bg-main);
+            border-radius: 8px;
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            min-height: 70px;
+            align-items: center;
+        }
+
+        .char-box {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 36px;
+            height: 40px;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .char-box.active-mag {
+            background: var(--highlight-mag);
+            border-color: var(--highlight-mag);
+            color: white;
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4);
+        }
+
+        .char-box.active-note {
+            background: var(--highlight-note);
+            border-color: var(--highlight-note);
+            color: white;
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(167, 139, 250, 0.4);
+        }
+
+        .char-box.success {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .char-box.fail {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        .inventory-section {
+            margin-top: 2rem;
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(13, 1fr);
+            gap: 8px;
+            margin-top: 1rem;
+        }
+
+        .inventory-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .inventory-item .letter {
+            width: 100%;
+            text-align: center;
+            background: var(--border);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 4px 0;
+            text-transform: uppercase;
+        }
+
+        .inventory-item .count {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2rem;
+            padding: 8px 0;
+            font-weight: 600;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        .inventory-item.updated {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+        }
+
+        .inventory-item.updated .count {
+            color: var(--primary);
+            transform: scale(1.2);
+        }
+
+        .inventory-item.error .count {
+            color: var(--danger);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .status-box {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background: #e0f2fe;
+            color: #0369a1;
+            font-weight: 500;
+            text-align: center;
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .status-box.success {
+            background: #d1fae5;
+            color: #047857;
+        }
+
+        .status-box.fail {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        @media (max-width: 768px) {
+            .inventory-grid {
+                grid-template-columns: repeat(7, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Ransom Note Simulator</h1>
+        <p>Watch how the O(m+n) frequency array algorithm works in real-time.</p>
+    </div>
+
+    <div class="card">
+        <div class="input-group">
+            <div class="input-field">
+                <label for="magazine-input">Magazine (Inventory)</label>
+                <input type="text" id="magazine-input" value="aab" maxlength="20">
+            </div>
+            <div class="input-field">
+                <label for="note-input">Ransom Note (Target)</label>
+                <input type="text" id="note-input" value="aa" maxlength="20">
+            </div>
+            <div class="input-field" style="display: flex; align-items: flex-end;">
+                <button id="btn-load">Load Strings</button>
+            </div>
+        </div>
+
+        <div>
+            <label>Magazine:</label>
+            <div class="string-display" id="mag-display"></div>
+        </div>
+
+        <div>
+            <label>Ransom Note:</label>
+            <div class="string-display" id="note-display"></div>
+        </div>
+
+        <div class="inventory-section">
+            <label>Frequency Array (Size 26)</label>
+            <div class="inventory-grid" id="inventory-grid">
+                <!-- JavaScript will generate 26 boxes here -->
+            </div>
+        </div>
+
+        <div class="status-box" id="status">
+            Click "Load Strings" to start.
+        </div>
+
+        <div class="controls">
+            <button id="btn-step" disabled>Step Forward</button>
+            <button id="btn-play" disabled>Play Auto</button>
+            <button id="btn-reset" disabled style="background-color: var(--text-muted);">Reset Run</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // State variables
+    let magazine = "";
+    let note = "";
+    let counts = new Array(26).fill(0);
+
+    let phase = "idle"; // idle, build, check, done
+    let magIndex = 0;
+    let noteIndex = 0;
+    let playInterval = null;
+
+    // DOM Elements
+    const magInput = document.getElementById('magazine-input');
+    const noteInput = document.getElementById('note-input');
+    const magDisplay = document.getElementById('mag-display');
+    const noteDisplay = document.getElementById('note-display');
+    const inventoryGrid = document.getElementById('inventory-grid');
+    const statusBox = document.getElementById('status');
+
+    const btnLoad = document.getElementById('btn-load');
+    const btnStep = document.getElementById('btn-step');
+    const btnPlay = document.getElementById('btn-play');
+    const btnReset = document.getElementById('btn-reset');
+
+    // Initialize 26 inventory boxes
+    function initInventory() {
+        inventoryGrid.innerHTML = '';
+        for (let i = 0; i < 26; i++) {
+            const char = String.fromCharCode(97 + i); // 'a' to 'z'
+            const item = document.createElement('div');
+            item.className = 'inventory-item';
+            item.id = `inv-${char}`;
+            item.innerHTML = `
+                    <div class="letter">${char}</div>
+                    <div class="count" id="count-${char}">0</div>
+                `;
+            inventoryGrid.appendChild(item);
+        }
+    }
+
+    function renderStrings() {
+        magDisplay.innerHTML = '';
+        for (let i = 0; i < magazine.length; i++) {
+            const span = document.createElement('span');
+            span.className = 'char-box';
+            span.id = `mag-char-${i}`;
+            span.textContent = magazine[i];
+            magDisplay.appendChild(span);
+        }
+
+        noteDisplay.innerHTML = '';
+        for (let i = 0; i < note.length; i++) {
+            const span = document.createElement('span');
+            span.className = 'char-box';
+            span.id = `note-char-${i}`;
+            span.textContent = note[i];
+            noteDisplay.appendChild(span);
+        }
+    }
+
+    function resetState() {
+        magazine = magInput.value.toLowerCase().replace(/[^a-z]/g, '');
+        note = noteInput.value.toLowerCase().replace(/[^a-z]/g, '');
+        magInput.value = magazine; // clean input visually
+        noteInput.value = note;
+
+        counts.fill(0);
+        magIndex = 0;
+        noteIndex = 0;
+
+        if (magazine.length > 0 && note.length > 0) {
+            phase = "build";
+            btnStep.disabled = false;
+            btnPlay.disabled = false;
+            btnReset.disabled = false;
+            statusBox.className = 'status-box';
+            statusBox.textContent = "Phase 1: Building inventory from the Magazine...";
+        } else {
+            phase = "idle";
+            btnStep.disabled = true;
+            btnPlay.disabled = true;
+            statusBox.textContent = "Please enter lowercase letters in both fields.";
+        }
+
+        stopPlay();
+        initInventory();
+        renderStrings();
+    }
+
+    function clearHighlights() {
+        document.querySelectorAll('.char-box').forEach(el => {
+            el.classList.remove('active-mag', 'active-note');
+        });
+        document.querySelectorAll('.inventory-item').forEach(el => {
+            el.classList.remove('updated', 'error');
+        });
+    }
+
+    function step() {
+        clearHighlights();
+
+        if (phase === "build") {
+            if (magIndex < magazine.length) {
+                const char = magazine[magIndex];
+                const charCode = char.charCodeAt(0) - 97;
+
+                // Highlight string char
+                document.getElementById(`mag-char-${magIndex}`).classList.add('active-mag');
+
+                // Update array logic
+                counts[charCode]++;
+
+                // Update inventory UI
+                const invItem = document.getElementById(`inv-${char}`);
+                const countEl = document.getElementById(`count-${char}`);
+                countEl.textContent = counts[charCode];
+                invItem.classList.add('updated');
+
+                statusBox.textContent = `Phase 1: Reading '${char}'. Incrementing its count to ${counts[charCode]}.`;
+                magIndex++;
+            } else {
+                phase = "check";
+                statusBox.textContent = "Phase 2: Magazine fully mapped. Now verifying Ransom Note...";
+            }
+        }
+        else if (phase === "check") {
+            if (noteIndex < note.length) {
+                const char = note[noteIndex];
+                const charCode = char.charCodeAt(0) - 97;
+
+                const charEl = document.getElementById(`note-char-${noteIndex}`);
+                charEl.classList.add('active-note');
+
+                const invItem = document.getElementById(`inv-${char}`);
+                const countEl = document.getElementById(`count-${char}`);
+
+                if (counts[charCode] === 0) {
+                    // FAIL CONDITION
+                    charEl.classList.remove('active-note');
+                    charEl.classList.add('fail');
+                    invItem.classList.add('error');
+
+                    statusBox.className = 'status-box fail';
+                    statusBox.textContent = `FAILED! Needed a '${char}', but count is 0. Cannot construct the note.`;
+                    phase = "done";
+                    btnStep.disabled = true;
+                    stopPlay();
+                } else {
+                    // SUCCESS CONSUME
+                    counts[charCode]--;
+                    countEl.textContent = counts[charCode];
+                    invItem.classList.add('updated');
+                    charEl.classList.remove('active-note');
+                    charEl.classList.add('success');
+
+                    statusBox.textContent = `Phase 2: Consuming '${char}'. Remaining count: ${counts[charCode]}.`;
+                    noteIndex++;
+                }
+            } else {
+                // SUCCESS COMPLETION
+                statusBox.className = 'status-box success';
+                statusBox.textContent = "SUCCESS! All characters in the Ransom Note were constructed from the Magazine.";
+                phase = "done";
+                btnStep.disabled = true;
+                stopPlay();
+            }
+        }
+    }
+
+    function togglePlay() {
+        if (playInterval) {
+            stopPlay();
+        } else {
+            if (phase === "done") resetState();
+            btnPlay.textContent = "Pause Auto";
+            playInterval = setInterval(() => {
+                if (phase !== "done") {
+                    step();
+                } else {
+                    stopPlay();
+                }
+            }, 800);
+        }
+    }
+
+    function stopPlay() {
+        if (playInterval) {
+            clearInterval(playInterval);
+            playInterval = null;
+        }
+        btnPlay.textContent = "Play Auto";
+    }
+
+    // Event Listeners
+    btnLoad.addEventListener('click', resetState);
+    btnReset.addEventListener('click', resetState);
+    btnStep.addEventListener('click', step);
+    btnPlay.addEventListener('click', togglePlay);
+
+    // Initial render
+    initInventory();
+</script>
+</body>
+</html>
