@@ -1,0 +1,309 @@
+html_content = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12-Week CodeSignal Preparation Plan</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --primary-dark: #0f172a;
+            --accent-color: #3b82f6;
+            --accent-light: #eff6ff;
+            --border-color: #e2e8f0;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+        .header {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header img {
+            max-width: 250px;
+            height: auto;
+            margin-bottom: 20px;
+            background-color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .header p {
+            color: #cbd5e1;
+            font-size: 16px;
+        }
+        .content {
+            padding: 40px;
+        }
+        .intro-box {
+            background-color: var(--accent-light);
+            border-left: 4px solid var(--accent-color);
+            padding: 20px;
+            margin-bottom: 40px;
+            border-radius: 0 8px 8px 0;
+        }
+        .intro-box h3 {
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .phase-section {
+            margin-bottom: 40px;
+        }
+        .phase-title {
+            font-size: 22px;
+            color: var(--primary-dark);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+        }
+        .phase-title span {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: normal;
+        }
+        .week-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fafafa;
+        }
+        .week-header {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+        .week-goal {
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+        .week-details {
+            margin-left: 20px;
+        }
+        .week-details li {
+            margin-bottom: 5px;
+        }
+        .strategy-section {
+            background-color: #f1f5f9;
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 40px;
+        }
+        .strategy-section h2 {
+            font-size: 20px;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+        }
+        .code-tag {
+            background-color: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #0f172a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Capital_One_logo.svg" alt="Capital One Logo">
+            <h1>12-Week CodeSignal Preparation Plan</h1>
+            <p>Target Readiness: Last Week of October 2026</p>
+        </div>
+        
+        <div class="content">
+            <div class="intro-box">
+                <h3>Preparation Overview</h3>
+                <p>This timeline is calibrated for the 70-minute, 4-question Capital One General Coding Assessment. The curriculum integrates core concepts from NeetCode 150 and Algomaster.io, heavily emphasizing the efficient Java implementation required to clear strict O(N) hidden time limits.</p>
+            </div>
+
+            <!-- Phase 1 -->
+            <div class="phase-section">
+                <div class="phase-title">
+                    <h2>Phase 1: Core Fundamentals</h2>
+                    <span>Weeks 1-4 (August)</span>
+                </div>
+                
+                <div class="week-card">
+                    <div class="week-header">Week 1: Arrays & Two Pointers</div>
+                    <p class="week-goal">Goal: Traverse and manipulate arrays without nested loops.</p>
+                    <ul class="week-details">
+                        <li>Focus on the Arrays & Hashing section of NeetCode 150.</li>
+                        <li>Practice reversing arrays, moving elements in-place, and finding pairs.</li>
+                        <li>Master utilizing <span class="code-tag">while</span> loops with left and right indices.</li>
+                    </ul>
+                </div>
+                
+                <div class="week-card">
+                    <div class="week-header">Week 2: Hash Maps & Frequency Counting</div>
+                    <p class="week-goal">Goal: Master O(1) lookups to defeat execution time limits.</p>
+                    <ul class="week-details">
+                        <li>Implement frequency maps using Java's <span class="code-tag">HashMap</span> and <span class="code-tag">HashSet</span>.</li>
+                        <li>Learn to check for anagrams, subsets, and matching pairs instantly.</li>
+                        <li>Understand the underlying mechanics of collision resolution in hash tables.</li>
+                    </ul>
+                </div>
+
+                <div class="week-card">
+                    <div class="week-header">Week 3: String Manipulation & Parsing</div>
+                    <p class="week-goal">Goal: Quickly slice and evaluate strings based on arbitrary rules.</p>
+                    <ul class="week-details">
+                        <li>Utilize <span class="code-tag">StringBuilder</span> for efficient concatenation.</li>
+                        <li>Solve palindrome checks and substring matching problems.</li>
+                        <li>Practice basic digit extraction and ASCII value manipulations.</li>
+                    </ul>
+                </div>
+
+                <div class="week-card">
+                    <div class="week-header">Week 4: Sliding Windows & Prefix Sums</div>
+                    <p class="week-goal">Goal: Calculate running totals in O(N) time.</p>
+                    <ul class="week-details">
+                        <li>Leverage Algomaster.io's breakdown of fixed and dynamic window patterns.</li>
+                        <li>Solve maximum subarray problems and longest substring variations.</li>
+                        <li>Implement prefix sum arrays for fast range querying.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Phase 2 -->
+            <div class="phase-section">
+                <div class="phase-title">
+                    <h2>Phase 2: Simulation & 2D Logic</h2>
+                    <span>Weeks 5-8 (September)</span>
+                </div>
+                
+                <div class="week-card">
+                    <div class="week-header">Week 5: 2D Matrices (The Grid)</div>
+                    <p class="week-goal">Goal: Traverse grids flawlessly to ace Question 3.</p>
+                    <ul class="week-details">
+                        <li>Practice iterating over rows and columns without <span class="code-tag">IndexOutOfBounds</span> exceptions.</li>
+                        <li>Implement boundary checks and adjacent neighbor evaluations (up, down, left, right).</li>
+                        <li>Master spiral matrix parsing algorithms.</li>
+                    </ul>
+                </div>
+                
+                <div class="week-card">
+                    <div class="week-header">Week 6: Complex Simulation Logic</div>
+                    <p class="week-goal">Goal: Follow multi-step, arbitrary rules exactly as written.</p>
+                    <ul class="week-details">
+                        <li>Identify "Simulation" tagged medium problems.</li>
+                        <li>Write code that tracks complex state changes over time.</li>
+                        <li>Practice structuring messy logic into clean helper methods.</li>
+                    </ul>
+                </div>
+
+                <div class="week-card">
+                    <div class="week-header">Week 7: Sorting & Custom Comparators</div>
+                    <p class="week-goal">Goal: Sort multidimensional data based on specific conditions.</p>
+                    <ul class="week-details">
+                        <li>Implement Java's <span class="code-tag">Comparator</span> and <span class="code-tag">Comparable</span> interfaces.</li>
+                        <li>Practice multi-level sorting (e.g., sort by value, break ties by string length).</li>
+                        <li>Understand when to sort upfront vs. maintaining a priority queue.</li>
+                    </ul>
+                </div>
+
+                <div class="week-card">
+                    <div class="week-header">Week 8: Debugging & Edge Cases</div>
+                    <p class="week-goal">Goal: Spot logical flaws before submitting.</p>
+                    <ul class="week-details">
+                        <li>Actively test code against empty arrays, null inputs, and single elements.</li>
+                        <li>Account for integer overflows and massive input sizes.</li>
+                        <li>Refine variable naming for better readability during high-pressure debugging.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Phase 3 -->
+            <div class="phase-section">
+                <div class="phase-title">
+                    <h2>Phase 3: Optimization & Environment Prep</h2>
+                    <span>Weeks 9-12 (October)</span>
+                </div>
+                
+                <div class="week-card">
+                    <div class="week-header">Week 9: Basic Dynamic Programming (1D)</div>
+                    <p class="week-goal">Goal: Cache expensive operations for Question 4 optimization.</p>
+                    <ul class="week-details">
+                        <li>Master top-down memoization using arrays or hash maps.</li>
+                        <li>Solve 1D patterns: Fibonacci sequences, climbing stairs, house robber.</li>
+                        <li>Avoid overly complex 2D DP algorithms; focus on fundamentals.</li>
+                    </ul>
+                </div>
+                
+                <div class="week-card">
+                    <div class="week-header">Week 10: CodeSignal Environment Acclimation</div>
+                    <p class="week-goal">Goal: Detach from heavy IDE reliance.</p>
+                    <ul class="week-details">
+                        <li>Transition to writing solutions in a plain text editor or LeetCode UI.</li>
+                        <li>Memorize essential Java String and Array standard library methods.</li>
+                        <li>Practice coding without intelligent syntax highlighting and autocomplete.</li>
+                    </ul>
+                </div>
+
+                <div class="week-card">
+                    <div class="week-header">Week 11: Timed Mock Assessments</div>
+                    <p class="week-goal">Goal: Build stamina and test the pacing strategy.</p>
+                    <ul class="week-details">
+                        <li>Complete full 70-minute mock exams on the CodeSignal practice portal.</li>
+                        <li>Aim for strict time splits: Q1 (10m), Q2 (15m), Q3 (20m), Q4 (25m).</li>
+                        <li>Simulate testing conditions: quiet room, single monitor, no external resources.</li>
+                    </ul>
+                </div>
+
+                <div class="week-card">
+                    <div class="week-header">Week 12: Triage & Review</div>
+                    <p class="week-goal">Goal: Shore up weak points and finalize readiness.</p>
+                    <ul class="week-details">
+                        <li>Halt learning new patterns.</li>
+                        <li>Review missed questions from mock exams and rewrite optimal solutions from scratch.</li>
+                        <li>Rest, hydrate, and prepare to take the official assessment by the final week of October.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="strategy-section">
+                <h2>Optimal Assessment Strategy</h2>
+                <p>Because all four questions are immediately visible, you dictate the pacing. The most reliable strategy is to solve <strong>Question 1</strong> and <strong>Question 2</strong> rapidly, skip directly to <strong>Question 4</strong> (which carries the highest algorithmic weight), and reserve <strong>Question 3</strong> (often a tedious, bug-prone matrix simulation) for the remaining time.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+"""
+with open('/mnt/data/CodeSignal_Prep_Plan_with_Logo.html', 'w') as f:
+    f.write(html_content)
+
+print("Created CodeSignal_Prep_Plan_with_Logo.html")
