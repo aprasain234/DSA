@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anagram Array Animation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h2 { margin-top: 0; }
+
+        .status-box {
+            background: #eef2ff;
+            border: 2px solid #c7d2fe;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            font-weight: bold;
+            font-size: 1.1rem;
+            min-height: 28px;
+        }
+
+        .words-container {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 5px;
+        }
+
+        .word-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .word-label {
+            font-size: 1rem;
+            color: #666;
+            letter-spacing: normal;
+            margin-bottom: 0.5rem;
+        }
+
+        .letter {
+            padding: 5px 2px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .highlight-add { background-color: #dcfce7; color: #166534; }
+        .highlight-sub { background-color: #fee2e2; color: #991b1b; }
+
+        .array-label {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        .array-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .bin {
+            display: flex;
+            flex-direction: column;
+            width: 45px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #f8fafc;
+            transition: all 0.3s;
+        }
+
+        .bin.active-add { border-color: #22c55e; transform: scale(1.1); box-shadow: 0 4px 6px rgba(34, 197, 94, 0.2); }
+        .bin.active-sub { border-color: #ef4444; transform: scale(1.1); box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2); }
+
+        .bin-letter {
+            background: #e2e8f0;
+            padding: 4px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        .bin-count {
+            padding: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .bin.active-add .bin-letter { background: #22c55e; color: white; }
+        .bin.active-sub .bin-letter { background: #ef4444; color: white; }
+
+        .controls { margin-top: 1rem; }
+
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        button:hover { background: #2563eb; }
+        button:disabled { background: #94a3b8; cursor: not-allowed; }
+
+        .reset-btn {
+            background: #64748b;
+            margin-left: 10px;
+        }
+        .reset-btn:hover { background: #475569; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Anagram Array Checker</h2>
+
+    <div class="status-box" id="statusText">
+        Click "Next Step" to start analyzing the words.
+    </div>
+
+    <div class="words-container">
+        <div class="word-section">
+            <div class="word-label">String s (Adding)</div>
+            <div id="word1"></div>
+        </div>
+        <div class="word-section">
+            <div class="word-label">String t (Subtracting)</div>
+            <div id="word2"></div>
+        </div>
+    </div>
+
+    <div class="array-label"><strong>charCounts = new int[26];</strong> (Showing relevant bins for visual clarity)</div>
+    <div class="array-container" id="arrayContainer">
+        <!-- Bins will be generated here -->
+    </div>
+
+    <div class="controls">
+        <button id="nextBtn" onclick="nextStep()">Next Step</button>
+        <button class="reset-btn" onclick="reset()">Reset</button>
+    </div>
+</div>
+
+<script>
+    const word1 = "cheater";
+    const word2 = "teacher";
+
+    // We only show the letters actually used in these words to keep the UI clean,
+    // though the real array has all 26.
+    const relevantLetters = ['a', 'c', 'e', 'h', 'r', 't'];
+
+    let counts = {};
+    let phase = 1; // 1 = adding word1, 2 = subtracting word2, 3 = done
+    let currentIndex = 0;
+
+    // Initialize UI
+    function init() {
+        // Setup words
+        document.getElementById('word1').innerHTML = word1.split('').map((char, i) => `<span id="w1-${i}" class="letter">${char}</span>`).join('');
+        document.getElementById('word2').innerHTML = word2.split('').map((char, i) => `<span id="w2-${i}" class="letter">${char}</span>`).join('');
+
+        // Setup bins
+        const arrayContainer = document.getElementById('arrayContainer');
+        arrayContainer.innerHTML = '';
+        relevantLetters.forEach(char => {
+            counts[char] = 0;
+            arrayContainer.innerHTML += `
+                    <div class="bin" id="bin-${char}">
+                        <div class="bin-letter">${char}</div>
+                        <div class="bin-count" id="count-${char}">0</div>
+                    </div>
+                `;
+        });
+    }
+
+    function clearHighlights() {
+        document.querySelectorAll('.letter').forEach(el => {
+            el.classList.remove('highlight-add', 'highlight-sub');
+        });
+        document.querySelectorAll('.bin').forEach(el => {
+            el.classList.remove('active-add', 'active-sub');
+        });
+    }
+
+    function nextStep() {
+        clearHighlights();
+
+        if (phase === 1) {
+            // ADDING PHASE
+            let char = word1[currentIndex];
+            counts[char]++;
+
+            // Highlight letter
+            document.getElementById(`w1-${currentIndex}`).classList.add('highlight-add');
+
+            // Highlight and update bin
+            let bin = document.getElementById(`bin-${char}`);
+            bin.classList.add('active-add');
+            document.getElementById(`count-${char}`).innerText = counts[char];
+
+            // Update text
+            document.getElementById('statusText').innerHTML = `Phase 1: Read '<strong>${char}</strong>'. Add 1 to bin '${char}'. Count is now ${counts[char]}.`;
+
+            currentIndex++;
+            if (currentIndex >= word1.length) {
+                phase = 2;
+                currentIndex = 0;
+            }
+        }
+        else if (phase === 2) {
+            // SUBTRACTING PHASE
+            let char = word2[currentIndex];
+            counts[char]--;
+
+            // Highlight letter
+            document.getElementById(`w2-${currentIndex}`).classList.add('highlight-sub');
+
+            // Highlight and update bin
+            let bin = document.getElementById(`bin-${char}`);
+            bin.classList.add('active-sub');
+            document.getElementById(`count-${char}`).innerText = counts[char];
+
+            // Update text
+            document.getElementById('statusText').innerHTML = `Phase 2: Read '<strong>${char}</strong>'. Subtract 1 from bin '${char}'. Count is now ${counts[char]}.`;
+
+            currentIndex++;
+            if (currentIndex >= word2.length) {
+                phase = 3;
+            }
+        }
+        else if (phase === 3) {
+            document.getElementById('statusText').innerHTML = `<strong>Finished!</strong> All bins are back to 0. The words are perfect anagrams.`;
+            document.getElementById('nextBtn').disabled = true;
+            clearHighlights();
+        }
+    }
+
+    function reset() {
+        phase = 1;
+        currentIndex = 0;
+        counts = {};
+        document.getElementById('statusText').innerHTML = 'Click "Next Step" to start analyzing the words.';
+        document.getElementById('nextBtn').disabled = false;
+        init();
+    }
+
+    // Run on load
+    init();
+</script>
+</body>
+</html>
