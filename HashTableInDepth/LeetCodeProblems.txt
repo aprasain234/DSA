@@ -69,3 +69,30 @@ class Solution {
     }
 }
 ----------------------------------------------------------------------------------
+LC 387. First Unique Character in a String
+
+class Solution {
+    public int firstUniqChar(String s) {
+        // Step 1: Create the frequency array
+        int[] charCounts = new int[26];
+
+        // Step 2: First pass - count occurrences of each character
+        for (char c : s.toCharArray()) {
+            charCounts[c - 'a']++;
+        }
+
+        // Step 3: Second pass - find the first character with a count of 1
+        for (int i = 0; i < s.length(); i++) {
+            if (charCounts[s.charAt(i) - 'a'] == 1) {
+                return i; // Return the index immediately
+            }
+        }
+
+        // Step 4: If no unique character was found, return -1
+        return -1;
+    }
+}
+---------------------------------------------------------
+
+
+
