@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contains Duplicate Animation</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #121212;
+            color: #ffffff;
+            padding-top: 50px;
+        }
+
+        .array-container {
+            display: flex;
+            gap: 12px;
+            margin: 40px 0;
+            min-height: 70px;
+        }
+
+        .box {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #27272a;
+            border-radius: 8px;
+            font-size: 24px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 2px solid #3f3f46;
+        }
+
+        /* Animation States */
+        .box.comparing {
+            background: #d97706;
+            border-color: #fbbf24;
+            transform: translateY(-10px);
+        }
+
+        .box.duplicate {
+            background: #dc2626;
+            border-color: #f87171;
+            animation: pulse 1s infinite;
+        }
+
+        .box.safe {
+            background: #059669;
+            border-color: #34d399;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #2563eb;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+
+        button:hover:not(:disabled) { background: #1d4ed8; }
+        button:disabled { background: #4b5563; cursor: not-allowed; }
+
+        .status {
+            margin-top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            min-height: 40px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Solution: Contains Duplicate</h1>
+<div class="controls">
+    <button id="btn-reset">1. New Array</button>
+    <button id="btn-sort">2. Arrays.sort(nums)</button>
+    <button id="btn-compare" disabled>3. Loop & Compare</button>
+</div>
+
+<div class="array-container" id="array-container"></div>
+<div class="status" id="status-text">Ready</div>
+
+<script>
+    let arr = [];
+    let currentIndex = 0;
+
+    const container = document.getElementById('array-container');
+    const statusText = document.getElementById('status-text');
+    const btnReset = document.getElementById('btn-reset');
+    const btnSort = document.getElementById('btn-sort');
+    const btnCompare = document.getElementById('btn-compare');
+
+    // Generate a random array (sometimes with duplicates, sometimes without)
+    function generateArray() {
+        arr = [];
+        const length = 8;
+        for(let i = 0; i < length; i++) {
+            arr.push(Math.floor(Math.random() * 10));
+        }
+        currentIndex = 0;
+        statusText.textContent = "Unsorted Array Generated";
+        statusText.style.color = "white";
+
+        btnSort.disabled = false;
+        btnCompare.disabled = true;
+        renderArray();
+    }
+
+    // Draw boxes to screen
+    function renderArray() {
+        container.innerHTML = '';
+        arr.forEach((num, index) => {
+            const box = document.createElement('div');
+            box.className = 'box';
+            box.textContent = num;
+            box.id = `box-${index}`;
+            container.appendChild(box);
+        });
+    }
+
+    // Simulate Arrays.sort()
+    btnSort.addEventListener('click', () => {
+        arr.sort((a, b) => a - b);
+        renderArray();
+        statusText.textContent = "Array Sorted (Duplicates are now adjacent)";
+
+        btnSort.disabled = true;
+        btnCompare.disabled = false;
+        currentIndex = 0;
+    });
+
+    // Simulate the for loop: if(nums[i] == nums[i+1])
+    btnCompare.addEventListener('click', () => {
+        // Reset previous highlights
+        document.querySelectorAll('.box').forEach(b => {
+            b.classList.remove('comparing');
+        });
+
+        if (currentIndex >= arr.length - 1) {
+            statusText.textContent = "Return False: No duplicates found.";
+            statusText.style.color = "#34d399";
+            btnCompare.disabled = true;
+            return;
+        }
+
+        const box1 = document.getElementById(`box-${currentIndex}`);
+        const box2 = document.getElementById(`box-${currentIndex + 1}`);
+
+        // Highlight current comparison
+        box1.classList.add('comparing');
+        box2.classList.add('comparing');
+
+        statusText.textContent = `Comparing indices ${currentIndex} and ${currentIndex + 1}...`;
+
+        if (arr[currentIndex] === arr[currentIndex + 1]) {
+            box1.classList.remove('comparing');
+            box2.classList.remove('comparing');
+            box1.classList.add('duplicate');
+            box2.classList.add('duplicate');
+            statusText.textContent = "Return True: Duplicate Found!";
+            statusText.style.color = "#f87171";
+            btnCompare.disabled = true;
+        } else {
+            box1.classList.add('safe');
+            currentIndex++;
+        }
+    });
+
+    btnReset.addEventListener('click', generateArray);
+
+    // Initialize on load
+    generateArray();
+</script>
+</body>
+</html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>387. First Unique Character Visualizer</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --container-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --primary-glow: #00bcd4; /* Translucent blue count cubes */
+            --accent-glow: #e91e63;  /* Count > 0 cubes */
+            --unique-glow: #4caf50;  /* First Unique found */
+            --trace-color: #ff9800;  /* First Pass tracing */
+            --trace-second: #ffeb3b; /* Second Pass tracing */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 { margin-bottom: 10px; color: #fff; text-transform: uppercase; letter-spacing: 2px; font-size: 1.5rem;}
+        p.subtitle { margin-top: 0; color: #aaa; margin-bottom: 30px; font-size: 0.9rem;}
+
+        #controls {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 10px;
+            background: var(--container-bg);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        input[type="text"] {
+            background: #2c2c2c;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            width: 250px;
+        }
+
+        button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover { background-color: #444; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        button#startBtn { background-color: #005662; }
+        button#startBtn:hover:not(:disabled) { background-color: var(--primary-glow); box-shadow: 0 0 10px var(--primary-glow); }
+
+        #visualization-zone {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            align-items: center;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        /* String Display */
+        #string-container {
+            display: flex;
+            gap: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 2rem;
+            background: #181818;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .char-box {
+            width: 40px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #333;
+            border-radius: 4px;
+            position: relative;
+            transition: background 0.1s, border-color 0.1s;
+        }
+
+        .char-box.active-trace {
+            border-color: var(--trace-color);
+            background-color: rgba(255, 152, 0, 0.1);
+            box-shadow: 0 0 15px var(--trace-color);
+        }
+
+        .char-box.active-trace-second {
+            border-color: var(--trace-second);
+            background-color: rgba(255, 235, 59, 0.1);
+            box-shadow: 0 0 15px var(--trace-second);
+        }
+
+        .char-box.final-unique {
+            border-color: var(--unique-glow);
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #fff;
+            font-weight: bold;
+            box-shadow: 0 0 20px var(--unique-glow);
+        }
+
+        .char-index {
+            position: absolute;
+            bottom: -20px;
+            font-size: 0.7rem;
+            color: #777;
+            font-family: sans-serif;
+        }
+
+        /* Frequency Array Display */
+        #array-container {
+            display: grid;
+            grid-template-columns: repeat(13, 1fr);
+            gap: 10px;
+            background: #181818;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .count-cube {
+            width: 45px;
+            height: 45px;
+            background-color: rgba(0, 188, 212, 0.1); /* Translucent Blue Base */
+            border: 2px solid rgba(0, 188, 212, 0.3);
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: background 0.2s, border-color 0.2s, transform 0.2s;
+            font-family: sans-serif;
+        }
+
+        .count-cube.has-count {
+            background-color: rgba(233, 30, 99, 0.15); /* Accent Glow */
+            border-color: rgba(233, 30, 99, 0.6);
+            transform: translateY(-3px); /* Slight rise like 3D visualization */
+        }
+
+        .count-cube.has-count .cube-count {
+            color: var(--accent-glow);
+            font-weight: bold;
+            text-shadow: 0 0 5px var(--accent-glow);
+        }
+
+        .cube-char {
+            font-size: 1.1rem;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .cube-count {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .cube-index {
+            position: absolute;
+            top: -16px;
+            font-size: 0.6rem;
+            color: #555;
+        }
+
+        /* Status Output */
+        #status-display {
+            background: var(--container-bg);
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            font-size: 1.1rem;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            border-left: 5px solid #333;
+            transition: border-color 0.3s;
+        }
+
+        #status-display.pass1 { border-color: var(--trace-color); }
+        #status-display.pass2 { border-color: var(--trace-second); }
+        #status-display.finished { border-color: var(--unique-glow); }
+        #status-display.error { border-color: #f44336; }
+
+        .highlight-output {
+            color: var(--unique-glow);
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-left: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<h1>387. First Unique Character</h1>
+<p class="subtitle">An interactive visualization of the frequency array solution</p>
+
+<div id="controls">
+    <input type="text" id="inputString" value="leetcode" maxlength="20" placeholder="Enter string (lowercase)">
+    <button id="startBtn">Visualize Solution</button>
+    <button id="resetBtn">Reset</button>
+</div>
+
+<div id="visualization-zone">
+    <!-- Pass 1 & Pass 2 Tracing Zone -->
+    <div id="string-container"></div>
+
+    <!-- Frequency Array (26 cubes) -->
+    <div id="array-container"></div>
+
+    <!-- Result / Code Trace Output -->
+    <div id="status-display">
+        Enter a string and press Visualize.
+    </div>
+</div>
+
+<script>
+    // --- Configuration & State ---
+    const ALPHABET = 'abcdefghijklmnopqrstuvwxyz'.split('');
+    const delay = (ms) => new Promise(res => setTimeout(res, ms));
+    const STEP_DELAY = 300; // Speed of animation steps
+
+    let animationRunning = false;
+    let animationAborted = false;
+
+    // --- DOM Elements ---
+    const inputStrField = document.getElementById('inputString');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const stringContainer = document.getElementById('string-container');
+    const arrayContainer = document.getElementById('array-container');
+    const statusDisplay = document.getElementById('status-display');
+
+    // --- Initialization ---
+    function initDisplay() {
+        animationAborted = true; // Stop any running loops
+        stringContainer.innerHTML = '';
+        arrayContainer.innerHTML = '';
+        statusDisplay.innerHTML = 'Ready. Press Visualize.';
+        statusDisplay.className = '';
+        startBtn.disabled = false;
+
+        // Create Input String Boxes
+        const s = inputStrField.value.toLowerCase().replace(/[^a-z]/g, '');
+        inputStrField.value = s; // Sanitized input
+        for (let i = 0; i < s.length; i++) {
+            const box = document.createElement('div');
+            box.className = 'char-box';
+            box.id = `string-char-${i}`;
+            box.innerText = s[i];
+
+            const indexSpan = document.createElement('span');
+            indexSpan.className = 'char-index';
+            indexSpan.innerText = i;
+            box.appendChild(indexSpan);
+
+            stringContainer.appendChild(box);
+        }
+
+        // Create 26 Frequency Cubes
+        for (let i = 0; i < 26; i++) {
+            const cube = document.createElement('div');
+            cube.className = 'count-cube';
+            cube.id = `count-cube-${i}`;
+
+            const indexSpan = document.createElement('span');
+            indexSpan.className = 'cube-index';
+            indexSpan.innerText = i;
+            cube.appendChild(indexSpan);
+
+            const charSpan = document.createElement('span');
+            charSpan.className = 'cube-char';
+            charSpan.innerText = ALPHABET[i];
+            cube.appendChild(charSpan);
+
+            const countSpan = document.createElement('span');
+            countSpan.className = 'cube-count';
+            countSpan.id = `cube-count-val-${i}`;
+            countSpan.innerText = '0';
+            cube.appendChild(countSpan);
+
+            arrayContainer.appendChild(cube);
+        }
+    }
+
+    // --- Core Algorithm Visualization ---
+    async function visualizeSolution() {
+        if (animationRunning) return;
+        initDisplay(); // Refresh state for new run
+        const s = inputStrField.value;
+        if (!s) { updateStatus("Error: String is empty.", "error"); return; }
+
+        animationRunning = true;
+        animationAborted = false;
+        startBtn.disabled = true;
+        inputStrField.disabled = true;
+
+        const charCounts = new Array(26).fill(0);
+
+        // --- PASS 1: Count Frequencies ---
+        updateStatus(`<b>Step 1: First Pass.</b><br>Scanning string to populate frequency array (charCounts[26])...`, "pass1");
+        await delay(STEP_DELAY * 2);
+
+        for (let i = 0; i < s.length; i++) {
+            if (animationAborted) return finishAnimation();
+            const char = s[i];
+            const alphabetIndex = char.charCodeAt(0) - 97; // 'a' = 97
+
+            // Trace String
+            const charBox = document.getElementById(`string-char-${i}`);
+            charBox.classList.add('active-trace');
+
+            updateStatus(`Processing index ${i}: Char '${char}'. <br>Incrementing charCounts[${alphabetIndex}] ('${char}')`, "pass1");
+
+            // Update Frequency Cube
+            charCounts[alphabetIndex]++;
+            const cube = document.getElementById(`count-cube-${alphabetIndex}`);
+            const countValSpan = document.getElementById(`cube-count-val-${alphabetIndex}`);
+
+            cube.classList.add('has-count');
+            countValSpan.innerText = charCounts[alphabetIndex];
+
+            await delay(STEP_DELAY);
+            charBox.classList.remove('active-trace');
+        }
+
+        // --- INTERMISSION ---
+        updateStatus("First Pass Complete.<br>Now scanning the string again to find the <u>first</u> count of 1.", "pass2");
+        await delay(STEP_DELAY * 4);
+
+        // --- PASS 2: Find First Unique ---
+        for (let i = 0; i < s.length; i++) {
+            if (animationAborted) return finishAnimation();
+            const char = s[i];
+            const alphabetIndex = char.charCodeAt(0) - 97;
+            const count = charCounts[alphabetIndex];
+
+            // Trace String
+            const charBox = document.getElementById(`string-char-${i}`);
+            charBox.classList.add('active-trace-second');
+
+            updateStatus(`Checking index ${i}: '${char}'. countCounts[${alphabetIndex}] is ${count}.`, "pass2");
+
+            // Highlight corresponding cube during check
+            const cube = document.getElementById(`count-cube-${alphabetIndex}`);
+            cube.style.borderColor = 'var(--trace-second)';
+
+            await delay(STEP_DELAY * 1.5);
+
+            if (count === 1) {
+                // FOUND IT!
+                updateStatus(`<strong>Found it!</strong><br>'${char}' at index ${i} is the first unique character. <br>Returning:<span class="highlight-output">${i}</span>`, "finished");
+                charBox.classList.remove('active-trace-second');
+                charBox.classList.add('final-unique');
+                cube.style.borderColor = 'var(--unique-glow)';
+                cube.style.boxShadow = '0 0 15px var(--unique-glow)';
+                return finishAnimation();
+            }
+
+            // Not unique, continue
+            cube.style.borderColor = ''; // Reset temp highlight
+            charBox.classList.remove('active-trace-second');
+        }
+
+        // --- FALLBACK: No Unique ---
+        updateStatus(`Second Pass complete.<br>No character had a count of 1. <br>Returning:<span class="highlight-output">-1</span>`, "finished");
+        finishAnimation();
+    }
+
+    // --- Helper Functions ---
+    function updateStatus(html, type = "") {
+        statusDisplay.innerHTML = html;
+        statusDisplay.className = type;
+    }
+
+    function finishAnimation() {
+        animationRunning = false;
+        startBtn.disabled = false;
+        inputStrField.disabled = false;
+    }
+
+    // --- Event Listeners ---
+    startBtn.addEventListener('click', visualizeSolution);
+    resetBtn.addEventListener('click', initDisplay);
+    inputStrField.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') visualizeSolution();
+    });
+
+    // --- Start up ---
+    initDisplay();
+
+</script>
+</body>
+</html>
